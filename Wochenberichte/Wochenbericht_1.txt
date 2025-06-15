@@ -1,10 +1,10 @@
-Wochenbericht 1 – EnzuGandyGame
-Zeitraum: [Datum eintragen]
-
-Team: Leon Rokvec & Selcuk
+Gruppe: Leon & Selcuk
 
 Planung & Vorbereitung
 In der ersten Woche unseres Projekts „EnzuGandyGame“ haben wir gemeinsam als Team die Grundlagen und das Konzept des Spiels festgelegt.
+
+Zielsetzung:
+Wir entwickeln ein Match-3-Game im Stil von „Candy Crush“, das aber einen eigenen Look und neue Level-Designs bekommt.
 
 Level-Planung
 Levelanzahl:
@@ -18,16 +18,29 @@ Wir haben uns darauf verständigt, dass jedes Level einen eigenen „Theme“ un
 
 Level 1:
 
+Theme: Candyland, Süßigkeitenwelt
 
+Farben: Rosa, Weiß, Pastellblau
 
 Level 2:
 
+Theme: Wüstenwelt
+
+Farben: Sandfarben, Orange, Gelb
 
 Level 3:
 
+Theme: Eishöhle
+
+Farben: Blau, Türkis, Weiß
 
 Level 4:
 
+Theme: Mystische Nacht
+
+Farben: Dunkelviolett, Schwarz, Sterne
+
+Zusätzlich haben wir ein Moodboard erstellt, auf dem alle Farben und Designelemente gesammelt werden.
 
 Technische Planung: Forms & Struktur
 Wir haben festgelegt, wie wir das Projekt in Windows Forms strukturieren:
@@ -46,3 +59,15 @@ Für Spiel-Einstellungen
 
 GameLogic:
 Die Spiellogik (Match-3 Mechanik, Punkte, Animation) kapseln wir in eigene Klassen
+
+Ordnerstruktur:
+Wir haben von Anfang an eine klare Ordnerstruktur im Projekt angelegt:
+
+/Forms für alle Formulare
+
+/Klassen für die Spiellogik
+
+/Resources für Grafiken, Sounds und Fonts
+
+Zusammenfassung der Woche
+In dieser ersten Woche haben wir als Team die komplette Planung und Strukturierung unseres Spiels EnzuGandyGame durchgeführt, die grundlegenden Themes und Farbschemata festgelegt und alle wichtigen Forms und Klassen skizziert. Die Basis für die Entwicklung steht!
