@@ -1,0 +1,48 @@
+Wochenbericht 1 – EnzuGandyGame
+Zeitraum: [Datum eintragen]
+
+Team: Leon Rokvec & Selcuk
+
+Planung & Vorbereitung
+In der ersten Woche unseres Projekts „EnzuGandyGame“ haben wir gemeinsam als Team die Grundlagen und das Konzept des Spiels festgelegt.
+
+Level-Planung
+Levelanzahl:
+Nach Brainstorming und Abstimmung haben wir uns zunächst auf 4 Level geeinigt.
+
+Level-Design:
+Jedes Level soll ein eigenes visuelles Thema bekommen, damit das Spiel abwechslungsreich bleibt.
+
+Design & Themes
+Wir haben uns darauf verständigt, dass jedes Level einen eigenen „Theme“ und eine Farbkombination bekommt:
+
+Level 1:
+
+
+
+Level 2:
+
+
+Level 3:
+
+
+Level 4:
+
+
+Technische Planung: Forms & Struktur
+Wir haben festgelegt, wie wir das Projekt in Windows Forms strukturieren:
+
+Haupt-Form:
+Startmenü mit Buttons (Play, Settings, Exit)
+
+LevelSelector-Form:
+Auswahlbildschirm für die Level
+
+Level-Forms:
+Für jedes Level eine eigene Form (z. B. Level1Form, Level2Form, …)
+
+Settings-Form:
+Für Spiel-Einstellungen
+
+GameLogic:
+Die Spiellogik (Match-3 Mechanik, Punkte, Animation) kapseln wir in eigene Klassen
