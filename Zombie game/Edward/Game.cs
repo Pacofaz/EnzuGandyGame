@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using ZombieGame.Entities;
 using ZombieGame.Enums;
 using ZombieGame.Managers;
 using ZombieGame.Utils;
+
+
 
 namespace ZombieGame
 {
@@ -20,6 +24,9 @@ namespace ZombieGame
         private readonly List<Entity> _pickups;
         private readonly List<Bullet> _bullets;
         private readonly List<Zombie> _zombies;
+
+        private readonly MusicPlayer _musicPlayer;
+
 
         private GameState _state;
         private bool _deathHandled = false;
@@ -37,6 +44,13 @@ namespace ZombieGame
             _pickups = new List<Entity>();
             _bullets = new List<Bullet>();
             SpawnPickups();
+
+            _musicPlayer = new MusicPlayer();
+            // Pfad absolut aus StartUpPath bauen und Debug-Info ausgeben
+            string filePath = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
+            Debug.WriteLine($"Versuche, MP3 zu laden: {filePath}");
+            Debug.WriteLine("Existiert? " + File.Exists(filePath));
+            _musicPlayer.Play(filePath, loop: true);
 
             _state = GameState.MainMenu;
         }

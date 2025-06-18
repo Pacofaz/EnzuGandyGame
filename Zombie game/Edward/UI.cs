@@ -61,6 +61,7 @@ namespace ZombieGame.Utils
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
+
             // 1) Healthbar-Hintergrund & -Füllung
             g.FillRectangle(Brushes.Gray, barX, barY, barWidth, barHeight);
             g.FillRectangle(Brushes.Lime, barX, barY, 2 * p.Health, barHeight);

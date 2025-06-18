@@ -53,6 +53,7 @@
     <Compile Include="GameState.cs" />
     <Compile Include="HealthPickup.cs" />
     <Compile Include="Map.cs" />
+    <Compile Include="MusicPlayer.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
