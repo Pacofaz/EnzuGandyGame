@@ -119,7 +119,7 @@ namespace ZombieGame.Utils
                 }
 
                 // --- Alive ---
-                string aliveText = $"Alive: {w.AliveZombies}";
+                string aliveText = $"Alive: {w.AliveZombies}/{w.TotalZombiesThisWave}";
                 var aliveSize = g.MeasureString(aliveText, waveFont);
                 float aliveXPos = (screen.Width - aliveSize.Width) / 2;
                 float aliveYPos = waveYPos + waveSize.Height + 8f;
@@ -136,6 +136,30 @@ namespace ZombieGame.Utils
                     using (var pen2 = new Pen(Color.Black, 6) { LineJoin = LineJoin.Round })
                         g.DrawPath(pen2, path2);
                     g.FillPath(Brushes.White, path2);
+                }
+
+                // --- Next Wave Timer (falls geplant) ---
+                if (w.NextWaveScheduled)
+                {
+                    string timer = $"Next round in: {Math.Ceiling(w.NextWaveTimeRemaining)}s";
+                    using (var fTimer = new Font("Segoe Print", 18, FontStyle.Regular))
+                    using (var pathT = new GraphicsPath())
+                    {
+                        var sizeT = g.MeasureString(timer, fTimer);
+                        float xT = (screen.Width - sizeT.Width) / 2;
+                        float yT = aliveYPos + aliveSize.Height + 10f;
+                        pathT.AddString(
+                            timer,
+                            fTimer.FontFamily,
+                            (int)fTimer.Style,
+                            fTimer.Size * g.DpiY / 72f,
+                            new PointF(xT, yT),
+                            StringFormat.GenericDefault
+                        );
+                        using (var penT = new Pen(Color.Black, 4) { LineJoin = LineJoin.Round })
+                            g.DrawPath(penT, pathT);
+                        g.FillPath(Brushes.White, pathT);
+                    }
                 }
             }
 

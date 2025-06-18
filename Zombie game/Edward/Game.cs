@@ -19,31 +19,21 @@ namespace ZombieGame
 
         private readonly List<Entity> _pickups;
         private readonly List<Bullet> _bullets;
-        private List<Zombie> _zombies;
+        private readonly List<Zombie> _zombies;
 
         private GameState _state;
-
-        // für Hold-to-Auto-Fire
-        private Point _lastMousePos;
-
-        // verhindert mehrfaches Öffnen des Death-Menüs
         private bool _deathHandled = false;
+        private Point _lastMousePos;
 
         public Game(Size screenSize)
         {
             _screenSize = screenSize;
-
             _map = new Map(1024, 1024, "map.png");
-            _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _zombies = new List<Zombie>();
             _waveManager = new WaveManager(_zombies, _map, _player);
 
-            _camera = new Camera(screenSize, _player)
-            {
-                Zoom = 1.9f
-            };
-
+            _camera = new Camera(screenSize, _player) { Zoom = 1.9f };
             _pickups = new List<Entity>();
             _bullets = new List<Bullet>();
             SpawnPickups();
@@ -63,16 +53,18 @@ namespace ZombieGame
             if (_state != GameState.Playing)
                 return;
 
-            // 1) Mauszustand und Position in jedem Frame neu auslesen
+            // 1) Input & Mouse
             bool mouseLeftDown = (Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left;
             if (Form.ActiveForm != null)
                 _lastMousePos = Form.ActiveForm.PointToClient(Cursor.Position);
 
-            // 2) Welle & Spieler
+            // 2) WaveManager spawnt und verwaltet Zombies
             _waveManager.Update();
+
+            // 3) Spieler updaten
             _player.Update();
 
-            // Grenze/Collision: Spieler innerhalb der Map halten
+            // 4) Spieler in Map-Grenzen halten
             {
                 var pos = _player.Position;
                 pos.X = Math.Max(0f, Math.Min(pos.X, _map.Width - _player.Size.Width));
@@ -80,11 +72,11 @@ namespace ZombieGame
                 _player.Position = pos;
             }
 
-            // 3) Zombies updaten
+            // 5) Zombies updaten
             foreach (var z in _zombies)
                 z.Update();
 
-            // 4) Schaden durch Zombies & Tod prüfen
+            // 6) Kollisions-Check Zombie ↔ Spieler
             var playerRect = new RectangleF(_player.Position, _player.Size);
             foreach (var z in _zombies)
             {
@@ -97,13 +89,10 @@ namespace ZombieGame
                     if (_player.Health <= 0 && !_deathHandled)
                     {
                         _deathHandled = true;
-                        var currentForm = Form.ActiveForm;
-                        currentForm?.Hide();
-
+                        Form.ActiveForm?.Hide();
                         using (var menu = new StartMenuForm())
                         {
-                            var dr = menu.ShowDialog();
-                            if (dr == DialogResult.OK)
+                            if (menu.ShowDialog() == DialogResult.OK)
                                 Application.Restart();
                             else
                                 Application.Exit();
@@ -113,20 +102,20 @@ namespace ZombieGame
                 }
             }
 
-            // 5) Pickups aufsammeln
+            // 7) Pickups aufsammeln
             for (int i = _pickups.Count - 1; i >= 0; i--)
             {
-                var pickup = _pickups[i];
-                var puRect = new RectangleF(pickup.Position, pickup.Size);
-                var plRect = new RectangleF(_player.Position, _player.Size);
-                if (!plRect.IntersectsWith(puRect)) continue;
-
-                if (pickup is HealthPickup hp) _player.Heal(hp.GetHealAmount());
-                else if (pickup is WeaponPickup wp) _player.AddWeapon(wp.WeaponName);
-                _pickups.RemoveAt(i);
+                var pu = _pickups[i];
+                if (new RectangleF(pu.Position, pu.Size)
+                    .IntersectsWith(new RectangleF(_player.Position, _player.Size)))
+                {
+                    if (pu is HealthPickup hp) _player.Heal(hp.GetHealAmount());
+                    else if (pu is WeaponPickup wp) _player.AddWeapon(wp.WeaponName);
+                    _pickups.RemoveAt(i);
+                }
             }
 
-            // 6) Bullets updaten & Kollision prüfen
+            // 8) Bullets updaten & Treffer prüfen
             for (int i = _bullets.Count - 1; i >= 0; i--)
             {
                 var b = _bullets[i];
@@ -136,8 +125,7 @@ namespace ZombieGame
                     _bullets.RemoveAt(i);
                     continue;
                 }
-
-                bool removed = false;
+                bool hit = false;
                 for (int j = _zombies.Count - 1; j >= 0; j--)
                 {
                     var z = _zombies[j];
@@ -146,54 +134,47 @@ namespace ZombieGame
                     {
                         z.Damage(b.GetDamage());
                         _bullets.RemoveAt(i);
-                        removed = true;
+                        hit = true;
                         break;
                     }
                 }
-                if (removed) continue;
+                if (hit) continue;
             }
 
-            // 7) Hold-to-Auto-Fire fürs Sturmgewehr (Index 1)
-            if (mouseLeftDown
-                && _player.GetCurrentWeaponIndex() == 1
-                && _player.CanFire())
+            // 9) Auto-Fire (Hold-to-Auto-Fire)
+            if (mouseLeftDown && _player.GetCurrentWeaponIndex() == 1 && _player.CanFire())
             {
                 FireAt(_lastMousePos);
                 _player.ResetFireCooldown();
             }
 
-            // 8) Kamera updaten
+            // 10) Kamera update
             _camera.Update();
         }
 
         public void Draw(Graphics g)
         {
-            switch (_state)
+            if (_state == GameState.MainMenu)
             {
-                case GameState.MainMenu:
-                    DrawMainMenu(g);
-                    break;
-
-                default:
-                    g.ResetTransform();
-                    g.ScaleTransform(_camera.Zoom, _camera.Zoom);
-                    g.TranslateTransform(-_camera.Position.X, -_camera.Position.Y);
-
-                    // Welt zeichnen
-                    _map.Draw(g);
-
-                    foreach (var wp in _pickups) wp.Draw(g);
-                    _player.Draw(g);
-                    foreach (var z in _zombies) z.Draw(g);
-                    foreach (var b in _bullets) b.Draw(g);
-
-                    // UI
-                    g.ResetTransform();
-                    UI.DrawGame(g, _player, _waveManager, _screenSize);
-                    if (_state == GameState.Paused) UI.DrawPause(g, _screenSize);
-                    else if (_state == GameState.Inventory) UI.DrawInventory(g, _player, _screenSize);
-                    break;
+                DrawMainMenu(g);
+                return;
             }
+
+            // Welt zeichnen
+            g.ResetTransform();
+            g.ScaleTransform(_camera.Zoom, _camera.Zoom);
+            g.TranslateTransform(-_camera.Position.X, -_camera.Position.Y);
+            _map.Draw(g);
+            foreach (var pu in _pickups) pu.Draw(g);
+            _player.Draw(g);
+            foreach (var z in _zombies) z.Draw(g);
+            foreach (var b in _bullets) b.Draw(g);
+
+            // UI
+            g.ResetTransform();
+            UI.DrawGame(g, _player, _waveManager, _screenSize);
+            if (_state == GameState.Paused) UI.DrawPause(g, _screenSize);
+            else if (_state == GameState.Inventory) UI.DrawInventory(g, _player, _screenSize);
         }
 
         private void DrawMainMenu(Graphics g)
@@ -201,17 +182,17 @@ namespace ZombieGame
             g.Clear(Color.Black);
             using (var font = new Font("Arial", 64, FontStyle.Bold))
             {
-                const string t = "Zombie Survival";
-                var sz = g.MeasureString(t, font);
-                g.DrawString(t, font, Brushes.Red,
+                const string title = "Zombie Survival";
+                var sz = g.MeasureString(title, font);
+                g.DrawString(title, font, Brushes.Red,
                     (_screenSize.Width - sz.Width) / 2,
                     _screenSize.Height / 3);
             }
             using (var font = new Font("Arial", 24))
             {
-                const string i = "Press ENTER to Start";
-                var sz = g.MeasureString(i, font);
-                g.DrawString(i, font, Brushes.White,
+                const string prompt = "Press ENTER to Start";
+                var sz = g.MeasureString(prompt, font);
+                g.DrawString(prompt, font, Brushes.White,
                     (_screenSize.Width - sz.Width) / 2,
                     _screenSize.Height / 2);
             }
@@ -248,11 +229,8 @@ namespace ZombieGame
 
         public void OnMouseDown(MouseEventArgs e)
         {
-            if (_state != GameState.Playing || e.Button != MouseButtons.Left)
-                return;
-
+            if (_state != GameState.Playing || e.Button != MouseButtons.Left) return;
             _lastMousePos = e.Location;
-
             if (_player.GetCurrentWeaponIndex() != 1 && _player.CanFire())
             {
                 FireAt(e.Location);
@@ -262,17 +240,14 @@ namespace ZombieGame
 
         public void OnMouseMove(MouseEventArgs e)
         {
-            if (_state != GameState.Playing)
-                return;
-
-            _lastMousePos = e.Location;
+            if (_state == GameState.Playing)
+                _lastMousePos = e.Location;
         }
-
 
         private void FireAt(Point screenPos)
         {
-            float worldX = _camera.Position.X + (screenPos.X / _camera.Zoom);
-            float worldY = _camera.Position.Y + (screenPos.Y / _camera.Zoom);
+            float worldX = _camera.Position.X + screenPos.X / _camera.Zoom;
+            float worldY = _camera.Position.Y + screenPos.Y / _camera.Zoom;
             PointF center = _player.GetCenter();
             float dx = worldX - center.X, dy = worldY - center.Y;
             float dist = (float)Math.Sqrt(dx * dx + dy * dy);
