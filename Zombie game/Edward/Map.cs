@@ -10,7 +10,7 @@ namespace ZombieGame.Utils
         public int Height { get; }
 
         private const float BorderThickness = 10f;
-        private static readonly Color BackgroundColor = Color.FromArgb(20, 20, 20);
+        private static readonly Color BackgroundColor = Color.DarkGray;
         private static readonly Color BorderColor = Color.DimGray;
 
         private readonly Bitmap _backgroundImage;

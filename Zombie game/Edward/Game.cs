@@ -46,7 +46,7 @@ namespace ZombieGame
             SpawnPickups();
 
             _musicPlayer = new MusicPlayer();
-            // Pfad absolut aus StartUpPath bauen und Debug-Info ausgeben
+
             string filePath = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
             Debug.WriteLine($"Versuche, MP3 zu laden: {filePath}");
             Debug.WriteLine("Existiert? " + File.Exists(filePath));
@@ -166,8 +166,13 @@ namespace ZombieGame
             _camera.Update();
         }
 
+
         public void Draw(Graphics g)
         {
+
+            g.ResetTransform();
+            g.Clear(Color.DimGray);  
+
             if (_state == GameState.MainMenu)
             {
                 DrawMainMenu(g);
@@ -175,7 +180,6 @@ namespace ZombieGame
             }
 
             // Welt zeichnen
-            g.ResetTransform();
             g.ScaleTransform(_camera.Zoom, _camera.Zoom);
             g.TranslateTransform(-_camera.Position.X, -_camera.Position.Y);
             _map.Draw(g);
@@ -190,6 +194,7 @@ namespace ZombieGame
             if (_state == GameState.Paused) UI.DrawPause(g, _screenSize);
             else if (_state == GameState.Inventory) UI.DrawInventory(g, _player, _screenSize);
         }
+
 
         private void DrawMainMenu(Graphics g)
         {
