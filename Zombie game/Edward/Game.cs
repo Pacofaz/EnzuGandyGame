@@ -1,8 +1,7 @@
-﻿// File: Game.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;              // ← für Control.MouseButtons, Cursor, Application, Form
+using System.Windows.Forms;
 using ZombieGame.Entities;
 using ZombieGame.Enums;
 using ZombieGame.Managers;
@@ -33,7 +32,9 @@ namespace ZombieGame
         public Game(Size screenSize)
         {
             _screenSize = screenSize;
-            _map = new Map(1000, 1000);
+
+            _map = new Map(1024, 1024, "map.png");
+            _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _zombies = new List<Zombie>();
             _waveManager = new WaveManager(_zombies, _map, _player);
@@ -47,7 +48,6 @@ namespace ZombieGame
             _bullets = new List<Bullet>();
             SpawnPickups();
 
-
             _state = GameState.MainMenu;
         }
 
@@ -57,8 +57,6 @@ namespace ZombieGame
             _pickups.Add(new WeaponPickup(new PointF(_map.Width - 350, _map.Height - 400), "Rifle"));
             _pickups.Add(new HealthPickup(new PointF(_map.Width / 2f + 100, _map.Height / 2f)));
         }
-
-
 
         public void Update()
         {
@@ -73,6 +71,14 @@ namespace ZombieGame
             // 2) Welle & Spieler
             _waveManager.Update();
             _player.Update();
+
+            // Grenze/Collision: Spieler innerhalb der Map halten
+            {
+                var pos = _player.Position;
+                pos.X = Math.Max(0f, Math.Min(pos.X, _map.Width - _player.Size.Width));
+                pos.Y = Math.Max(0f, Math.Min(pos.Y, _map.Height - _player.Size.Height));
+                _player.Position = pos;
+            }
 
             // 3) Zombies updaten
             foreach (var z in _zombies)
@@ -90,7 +96,7 @@ namespace ZombieGame
 
                     if (_player.Health <= 0 && !_deathHandled)
                     {
-                        _deathHandled = true;              // nur einmal ausführen
+                        _deathHandled = true;
                         var currentForm = Form.ActiveForm;
                         currentForm?.Hide();
 
@@ -98,17 +104,10 @@ namespace ZombieGame
                         {
                             var dr = menu.ShowDialog();
                             if (dr == DialogResult.OK)
-                            {
-                                // New Game / Continue → Neustart der App
                                 Application.Restart();
-                            }
                             else
-                            {
-                                // Exit → Beenden
                                 Application.Exit();
-                            }
                         }
-
                         return;
                     }
                 }

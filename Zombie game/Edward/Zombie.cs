@@ -1,4 +1,4 @@
-﻿// File: Entities/Zombie.cs
+﻿
 using System;
 using System.Drawing;
 using ZombieGame.Entities;
@@ -8,7 +8,7 @@ namespace ZombieGame.Entities
     public class Zombie : Entity
     {
         private readonly Player _playerRef;
-        private readonly float _detectRadius = 400f;
+        private readonly float _detectRadius = 800f;
         private float _attackCooldown;                        // << Cooldown-Timer (in Frames)
         private const float AttackInterval = 60f;             // << 60 Frames ≈ 1 Sekunde bei 60 FPS
 

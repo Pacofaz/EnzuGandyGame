@@ -1,4 +1,4 @@
-﻿// File: Entities/Bullet.cs
+﻿
 using System.Drawing;
 
 namespace ZombieGame.Entities

@@ -1,4 +1,4 @@
-﻿// File: Entities/Entity.cs
+﻿
 using System.Drawing;
 
 namespace ZombieGame.Entities

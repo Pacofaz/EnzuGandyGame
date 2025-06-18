@@ -1,6 +1,6 @@
-﻿// File: Utils/Map.cs
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ZombieGame.Utils
 {
@@ -9,55 +9,55 @@ namespace ZombieGame.Utils
         public int Width { get; }
         public int Height { get; }
 
-        // Straßen-Konfiguration
-        private const float RoadThickness = 80f;
-        private const float RoadSpacingX = 800f; // Abstand der Vertikalen Straßen
-        private const float RoadSpacingY = 800f; // Abstand der Horizontalen Straßen
+        private const float BorderThickness = 10f;
+        private static readonly Color BackgroundColor = Color.FromArgb(20, 20, 20);
+        private static readonly Color BorderColor = Color.DimGray;
 
-        public Map(int w, int h)
+        private readonly Bitmap _backgroundImage;
+
+
+        /// <param name="width"
+        /// <param name="height"
+        /// <param name="backgroundAsset">
+
+        public Map(int width, int height, string backgroundAsset = null)
         {
-            Width = w;
-            Height = h;
+            Width = width;
+            Height = height;
+
+            if (!string.IsNullOrWhiteSpace(backgroundAsset))
+            {
+                var path = Path.Combine(Application.StartupPath, "Assets", backgroundAsset);
+                if (!File.Exists(path))
+                    throw new FileNotFoundException($"Background asset '{backgroundAsset}' nicht gefunden.", path);
+                _backgroundImage = new Bitmap(path);
+            }
         }
 
         public void Draw(Graphics g)
         {
-            g.Clear(Color.FromArgb(20, 20, 20));
-
-            using (var roadPen = new Pen(Color.DimGray, RoadThickness))
+            // Hintergrund: Bild oder Farbe
+            if (_backgroundImage != null)
             {
-                // Vertikale Straßen
-                for (float x = RoadSpacingX; x < Width; x += RoadSpacingX)
-                    g.DrawLine(roadPen, x, 0, x, Height);
-
-                // Horizontale Straßen
-                for (float y = RoadSpacingY; y < Height; y += RoadSpacingY)
-                    g.DrawLine(roadPen, 0, y, Width, y);
+                // Bild über ganze Map skalieren
+                g.DrawImage(_backgroundImage, 0, 0, Width, Height);
+            }
+            else
+            {
+                g.Clear(BackgroundColor);
             }
 
-            // Beispiel-Häuser (wird später von Building gezeichnet)
-            // hier nur Dekoration:
-            g.FillRectangle(Brushes.Maroon, 150, 150, 400, 300);
-            g.FillRectangle(Brushes.Navy, Width - 600, Height - 600, 500, 400);
-        }
-
-        /// <summary>
-        /// Liefert alle Straßen als RectangleF-Areale,
-        /// damit man beim Spawnen von Gebäuden Kollision testen kann.
-        /// </summary>
-        public IEnumerable<RectangleF> GetRoadAreas()
-        {
-            var roads = new List<RectangleF>();
-
-            // Vertikale Straßen
-            for (float x = RoadSpacingX; x < Width; x += RoadSpacingX)
-                roads.Add(new RectangleF(x - RoadThickness / 2f, 0, RoadThickness, Height));
-
-            // Horizontale Straßen
-            for (float y = RoadSpacingY; y < Height; y += RoadSpacingY)
-                roads.Add(new RectangleF(0, y - RoadThickness / 2f, Width, RoadThickness));
-
-            return roads;
+            // Rahmen
+            using (var pen = new Pen(BorderColor, BorderThickness))
+            {
+                g.DrawRectangle(
+                    pen,
+                    BorderThickness / 2f,
+                    BorderThickness / 2f,
+                    Width - BorderThickness,
+                    Height - BorderThickness
+                );
+            }
         }
     }
 }

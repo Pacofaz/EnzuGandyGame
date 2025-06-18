@@ -13,7 +13,7 @@ namespace ZombieGame.Entities
 
         public override void Update()
         {
-            // Steht still
+            
         }
 
         public override void Draw(Graphics g)

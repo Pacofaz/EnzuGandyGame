@@ -1,4 +1,4 @@
-﻿// File: Entities/WeaponPickup.cs
+﻿
 using System.Drawing;
 
 namespace ZombieGame.Entities

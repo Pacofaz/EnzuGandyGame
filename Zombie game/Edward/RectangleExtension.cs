@@ -1,4 +1,4 @@
-﻿// File: Utils/RectangleExtensions.cs
+﻿
 using System.Drawing;
 
 namespace ZombieGame.Utils

@@ -6,7 +6,7 @@ namespace ZombieGame.Utils
     public class Camera
     {
         public PointF Position { get; private set; }
-        public float Zoom { get; set; } = 1.5f; // >1 => reinzoomen (kleineres FOV)
+        public float Zoom { get; set; } = 1.5f; 
 
         private readonly Size _screenSize;
         private readonly Player _player;

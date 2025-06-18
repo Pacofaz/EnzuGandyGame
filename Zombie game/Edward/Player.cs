@@ -1,4 +1,4 @@
-﻿// File: Entities/Player.cs
+﻿
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,7 +22,7 @@ namespace ZombieGame.Entities
         private readonly HashSet<Keys> _pressed = new HashSet<Keys>();
         private readonly List<string> _inventory = new List<string> { "Pistol", "Rifle" };
         private int _curWeap;
-        private int _fireCd; // als int, nicht float
+        private int _fireCd; 
 
         public int Health { get; private set; }
 
