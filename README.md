@@ -2,10 +2,13 @@
 
 ## Gruppenmitglieder & Hauptaufgaben
 
-- **Selcuk:** 50 %  
-- **Leon:** 50 %
+- **Selcuk:** 33,33%
+- **Leon:** 33,33%
+- **Edward:** 33,33%
 
 ## Spielidee
 
-Ein Candy-Crush-ähnliches Spiel mit 4 Leveln.
+-Ein Candy-Crush-ähnliches Spiel mit 4 Leveln.
+
+-Zombie Spiel mit Wellen System
 

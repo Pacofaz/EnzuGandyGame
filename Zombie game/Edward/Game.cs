@@ -9,8 +9,6 @@ using ZombieGame.Enums;
 using ZombieGame.Managers;
 using ZombieGame.Utils;
 
-
-
 namespace ZombieGame
 {
     public class Game
@@ -18,8 +16,8 @@ namespace ZombieGame
         private readonly Size _screenSize;
         private readonly Map _map;
         private readonly Player _player;
-        private readonly Camera _camera;
-        private readonly WaveManager _waveManager;
+        private Camera _camera;
+        private WaveManager _waveManager;
 
         private readonly List<Entity> _pickups;
         private readonly List<Bullet> _bullets;
@@ -27,10 +25,12 @@ namespace ZombieGame
 
         private readonly MusicPlayer _musicPlayer;
 
-
         private GameState _state;
         private bool _deathHandled = false;
         private Point _lastMousePos;
+
+
+        private Rectangle _tryAgainBtn, _backToMenuBtn;
 
         public Game(Size screenSize)
         {
@@ -46,13 +46,13 @@ namespace ZombieGame
             SpawnPickups();
 
             _musicPlayer = new MusicPlayer();
-
             string filePath = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
-            Debug.WriteLine($"Versuche, MP3 zu laden: {filePath}");
-            Debug.WriteLine("Existiert? " + File.Exists(filePath));
+            Debug.WriteLine($"Loading MP3: {filePath}");
+            Debug.WriteLine("Exists? " + File.Exists(filePath));
             _musicPlayer.Play(filePath, loop: true);
 
-            _state = GameState.MainMenu;
+
+            _state = GameState.Playing;
         }
 
         private void SpawnPickups()
@@ -67,33 +67,26 @@ namespace ZombieGame
             if (_state != GameState.Playing)
                 return;
 
-            // 1) Input & Mouse
             bool mouseLeftDown = (Control.MouseButtons & MouseButtons.Left) == MouseButtons.Left;
             if (Form.ActiveForm != null)
                 _lastMousePos = Form.ActiveForm.PointToClient(Cursor.Position);
 
-            // 2) WaveManager spawnt und verwaltet Zombies
+
             _waveManager.Update();
 
-            // 3) Spieler updaten
+
             _player.Update();
 
-            // 4) Spieler in Map-Grenzen halten
-            {
-                var pos = _player.Position;
-                pos.X = Math.Max(0f, Math.Min(pos.X, _map.Width - _player.Size.Width));
-                pos.Y = Math.Max(0f, Math.Min(pos.Y, _map.Height - _player.Size.Height));
-                _player.Position = pos;
-            }
 
-            // 5) Zombies updaten
-            foreach (var z in _zombies)
-                z.Update();
+            var pos = _player.Position;
+            pos.X = Math.Max(0f, Math.Min(pos.X, _map.Width - _player.Size.Width));
+            pos.Y = Math.Max(0f, Math.Min(pos.Y, _map.Height - _player.Size.Height));
+            _player.Position = pos;
 
-            // 6) Kollisions-Check Zombie ↔ Spieler
             var playerRect = new RectangleF(_player.Position, _player.Size);
             foreach (var z in _zombies)
             {
+                z.Update();
                 var zombieRect = new RectangleF(z.Position, z.Size);
                 if (zombieRect.IntersectsWith(playerRect) && z.CanAttack())
                 {
@@ -103,20 +96,13 @@ namespace ZombieGame
                     if (_player.Health <= 0 && !_deathHandled)
                     {
                         _deathHandled = true;
-                        Form.ActiveForm?.Hide();
-                        using (var menu = new StartMenuForm())
-                        {
-                            if (menu.ShowDialog() == DialogResult.OK)
-                                Application.Restart();
-                            else
-                                Application.Exit();
-                        }
+                        _state = GameState.GameOver;
                         return;
                     }
                 }
             }
 
-            // 7) Pickups aufsammeln
+
             for (int i = _pickups.Count - 1; i >= 0; i--)
             {
                 var pu = _pickups[i];
@@ -129,7 +115,7 @@ namespace ZombieGame
                 }
             }
 
-            // 8) Bullets updaten & Treffer prüfen
+
             for (int i = _bullets.Count - 1; i >= 0; i--)
             {
                 var b = _bullets[i];
@@ -139,6 +125,7 @@ namespace ZombieGame
                     _bullets.RemoveAt(i);
                     continue;
                 }
+
                 bool hit = false;
                 for (int j = _zombies.Count - 1; j >= 0; j--)
                 {
@@ -155,31 +142,28 @@ namespace ZombieGame
                 if (hit) continue;
             }
 
-            // 9) Auto-Fire (Hold-to-Auto-Fire)
             if (mouseLeftDown && _player.GetCurrentWeaponIndex() == 1 && _player.CanFire())
             {
                 FireAt(_lastMousePos);
                 _player.ResetFireCooldown();
             }
 
-            // 10) Kamera update
+
             _camera.Update();
         }
 
-
         public void Draw(Graphics g)
         {
-
             g.ResetTransform();
-            g.Clear(Color.DimGray);  
+            g.Clear(Color.DimGray);
 
-            if (_state == GameState.MainMenu)
+            if (_state == GameState.GameOver)
             {
-                DrawMainMenu(g);
+                DrawGameOverScreen(g);
                 return;
             }
 
-            // Welt zeichnen
+
             g.ScaleTransform(_camera.Zoom, _camera.Zoom);
             g.TranslateTransform(-_camera.Position.X, -_camera.Position.Y);
             _map.Draw(g);
@@ -188,45 +172,102 @@ namespace ZombieGame
             foreach (var z in _zombies) z.Draw(g);
             foreach (var b in _bullets) b.Draw(g);
 
-            // UI
+
             g.ResetTransform();
             UI.DrawGame(g, _player, _waveManager, _screenSize);
             if (_state == GameState.Paused) UI.DrawPause(g, _screenSize);
             else if (_state == GameState.Inventory) UI.DrawInventory(g, _player, _screenSize);
         }
 
-
-        private void DrawMainMenu(Graphics g)
+        private void DrawGameOverScreen(Graphics g)
         {
-            g.Clear(Color.Black);
-            using (var font = new Font("Arial", 64, FontStyle.Bold))
+
+            const string msg = "YOU ARE DEAD";
+            using (var font = new Font("Arial", 48, FontStyle.Bold))
             {
-                const string title = "Zombie Survival";
-                var sz = g.MeasureString(title, font);
-                g.DrawString(title, font, Brushes.Red,
+                var sz = g.MeasureString(msg, font);
+                g.DrawString(msg, font, Brushes.Red,
                     (_screenSize.Width - sz.Width) / 2,
                     _screenSize.Height / 3);
             }
-            using (var font = new Font("Arial", 24))
+
+
+            int w = 200, h = 50, gap = 20;
+            int cx = (_screenSize.Width - w) / 2;
+            int y = _screenSize.Height / 2;
+            _tryAgainBtn = new Rectangle(cx, y, w, h);
+            _backToMenuBtn = new Rectangle(cx, y + h + gap, w, h);
+
+            DrawSimpleButton(g, _tryAgainBtn, "Try Again");
+            DrawSimpleButton(g, _backToMenuBtn, "Back to Menu");
+        }
+
+        private void DrawSimpleButton(Graphics g, Rectangle r, string text)
+        {
+            g.FillRectangle(Brushes.Black, r);
+            g.DrawRectangle(Pens.White, r);
+            using (var font = new Font("Arial", 20))
             {
-                const string prompt = "Press ENTER to Start";
-                var sz = g.MeasureString(prompt, font);
-                g.DrawString(prompt, font, Brushes.White,
-                    (_screenSize.Width - sz.Width) / 2,
-                    _screenSize.Height / 2);
+                var sz = g.MeasureString(text, font);
+                g.DrawString(text, font, Brushes.White,
+                    r.X + (r.Width - sz.Width) / 2,
+                    r.Y + (r.Height - sz.Height) / 2);
             }
+        }
+
+
+        public bool HandleMouseClick(MouseEventArgs e)
+        {
+            if (_state != GameState.GameOver) return false;
+
+            if (_tryAgainBtn.Contains(e.Location))
+            {
+                RestartGame();
+                return true;
+            }
+            if (_backToMenuBtn.Contains(e.Location))
+            {
+                // Zurück ins Startmenü
+                Form.ActiveForm?.Hide();
+                using (var menu = new StartMenuForm())
+                {
+                    if (menu.ShowDialog() == DialogResult.OK)
+                    {
+                        RestartGame();
+                        return true;
+                    }
+                }
+                Application.Exit();
+                return true;
+            }
+            return false;
+        }
+
+        private void RestartGame()
+        {
+            // Spieler zurücksetzen
+            _player.Reset();
+            _deathHandled = false;
+
+            // Zombies & Waves neu initialisieren
+            _zombies.Clear();
+            _waveManager = new WaveManager(_zombies, _map, _player);
+
+            // Pickups & Bullets neu setzen
+            _pickups.Clear();
+            _bullets.Clear();
+            SpawnPickups();
+
+            // Status wieder spielen
+            _state = GameState.Playing;
         }
 
         public void OnKeyDown(KeyEventArgs e)
         {
-            if (_state == GameState.MainMenu && e.KeyCode == Keys.Enter)
-            {
-                _state = GameState.Playing;
-                return;
-            }
             if (e.KeyCode == Keys.Escape)
             {
-                if (_state == GameState.Playing) _state = GameState.Paused;
+                if (_state == GameState.Playing)
+                    _state = GameState.Paused;
                 else if (_state == GameState.Paused || _state == GameState.Inventory)
                     _state = GameState.Playing;
                 return;
@@ -248,7 +289,9 @@ namespace ZombieGame
 
         public void OnMouseDown(MouseEventArgs e)
         {
-            if (_state != GameState.Playing || e.Button != MouseButtons.Left) return;
+            if (_state != GameState.Playing || e.Button != MouseButtons.Left)
+                return;
+
             _lastMousePos = e.Location;
             if (_player.GetCurrentWeaponIndex() != 1 && _player.CanFire())
             {
@@ -272,6 +315,7 @@ namespace ZombieGame
             float dist = (float)Math.Sqrt(dx * dx + dy * dy);
             if (dist <= 0) return;
             dx /= dist; dy /= dist;
+
             _bullets.Add(new Bullet(center, dx, dy, _player.GetCurrentWeaponDamage()));
         }
     }

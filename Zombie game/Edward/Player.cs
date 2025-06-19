@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -12,6 +12,9 @@ namespace ZombieGame.Entities
     {
         private static readonly Bitmap[] StaticFrames;
         private static readonly SizeF EntitySize;
+        private const int MaxHealth = 100;
+
+        private readonly PointF _startPosition;
 
         private bool _facingRight = true;
         private readonly Bitmap[] _frames;
@@ -20,9 +23,9 @@ namespace ZombieGame.Entities
         private const int FrameInterval = 8;
 
         private readonly HashSet<Keys> _pressed = new HashSet<Keys>();
-        private readonly List<string> _inventory = new List<string> { "Pistol", "Rifle" };
+        private readonly List<string> _inventory = new List<string>();
         private int _curWeap;
-        private int _fireCd; 
+        private int _fireCd;
 
         public int Health { get; private set; }
 
@@ -52,13 +55,38 @@ namespace ZombieGame.Entities
         public Player(PointF start)
             : base(start, 5f, EntitySize)
         {
+            _startPosition = start;
             _frames = StaticFrames;
-            Health = 100;
+            InitializeStats();
+        }
+
+        private void InitializeStats()
+        {
+            Health = MaxHealth;
+            _inventory.Clear();
+            _inventory.Add("Pistol");
+            _inventory.Add("Rifle");
+            _curWeap = 0;
+            _fireCd = 0;
+            _currentFrame = 0;
+            _frameTimer = 0;
+            _pressed.Clear();
+        }
+
+        /// <summary>
+        /// Setzt Spieler-Status auf Anfangszustand zurück.
+        /// </summary>
+        public void Reset()
+        {
+            // Position zurücksetzen
+            Position = _startPosition;
+            // alle anderen Stats auf Startwerte
+            InitializeStats();
         }
 
         public void Heal(int amount)
         {
-            Health = Math.Min(100, Health + amount);
+            Health = Math.Min(MaxHealth, Health + amount);
         }
 
         public override void Update()
@@ -133,8 +161,7 @@ namespace ZombieGame.Entities
 
         public void ResetFireCooldown()
         {
-            // _curWeap == 0 => Pistol, langsamer
-            // _curWeap == 1 => Rifle, schneller (Spray)
+            // _curWeap == 0 => Pistol (langsamer), 1 => Rifle (schneller)
             _fireCd = (_curWeap == 0) ? 15 : 5;
         }
 
@@ -146,7 +173,8 @@ namespace ZombieGame.Entities
 
         public void AddWeapon(string w)
         {
-            if (!_inventory.Contains(w)) _inventory.Add(w);
+            if (!_inventory.Contains(w))
+                _inventory.Add(w);
         }
 
         public void Damage(int amt)
