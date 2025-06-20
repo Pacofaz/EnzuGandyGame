@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Edward;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ZombieGame.Entities;
@@ -30,6 +31,8 @@ namespace ZombieGame.Managers
 
         private int _nextWaveDelayCounter;
         private bool _nextWaveScheduled;
+        private readonly List<Projectile> _projectiles; // <-- NEU!
+
 
         private const int InitialDelayFrames = 60 * 1;   // 5s @60FPS
         private const int NextWaveDelayFrames = 60 * 5;  // 10s @60FPS
@@ -40,11 +43,13 @@ namespace ZombieGame.Managers
                 ? 0f
                 : (NextWaveDelayFrames - _nextWaveDelayCounter) / 60f;
 
-        public WaveManager(List<Zombie> zombies, Map map, Player player)
+
+        public WaveManager(List<Zombie> zombies, Map map, Player player, List<Projectile> projectiles)
         {
             _zombies = zombies;
             _map = map;
             _player = player;
+            _projectiles = projectiles; // NEU!
             StartNextWave();
         }
 
@@ -128,7 +133,12 @@ namespace ZombieGame.Managers
             }
             while (rect.IntersectsWith(new RectangleF(_player.Position, _player.Size)));
 
-            _zombies.Add(new Zombie(pos, _player));
+            // NEU: 25% Chance für Range-Zombie, Rest normale Zombies
+            if (_rnd.NextDouble() < 0.25)
+                _zombies.Add(new ZombieRange(pos, _player, _projectiles));
+            else
+                _zombies.Add(new Zombie(pos, _player));
         }
+
     }
 }

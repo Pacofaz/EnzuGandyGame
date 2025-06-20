@@ -1,33 +1,30 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
-using ZombieGame.Entities;
 
 namespace ZombieGame.Entities
 {
     public class Zombie : Entity
     {
-        private readonly Player _playerRef;
+        protected readonly Player _playerRef; // <-- PROTECTED!
+        protected float _attackCooldown;
+        protected const float AttackInterval = 60f;
+
+        public int Health { get; protected set; }
+        public int MaxHealth { get; protected set; }
+        public bool IsDead { get; protected set; }
         private readonly float _detectRadius = 800f;
-        private float _attackCooldown;                        // << Cooldown-Timer (in Frames)
-        private const float AttackInterval = 60f;             // << 60 Frames ≈ 1 Sekunde bei 60 FPS
-
-        public int Health { get; private set; }
-        public int MaxHealth { get; }
-        public bool IsDead { get; private set; }
-
-        public Zombie(PointF pos, Player player)
-            : base(pos, 2f, new SizeF(28, 28))
+        public Zombie(PointF pos, Player player, int maxHealth = 100)
+           : base(pos, 2f, new SizeF(28, 28))
         {
             _playerRef = player;
-            MaxHealth = 100;
+            MaxHealth = maxHealth;
             Health = MaxHealth;
             _attackCooldown = 0f;
         }
 
         public override void Update()
         {
-            // Bewegung zum Spieler
+            // ... wie gehabt
             float dx = _playerRef.Position.X - Position.X;
             float dy = _playerRef.Position.Y - Position.Y;
             var dist = (float)Math.Sqrt(dx * dx + dy * dy);
@@ -39,7 +36,6 @@ namespace ZombieGame.Entities
                 );
             }
 
-            // Cooldown herunterzählen
             if (_attackCooldown > 0f)
                 _attackCooldown--;
         }
