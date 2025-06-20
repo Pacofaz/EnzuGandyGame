@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Edward;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,6 +22,7 @@ namespace ZombieGame
 
         private readonly List<Entity> _pickups;
         private readonly List<Bullet> _bullets;
+        private readonly List<Projectile> _enemyProjectiles;    // <--- NEU!
         private readonly List<Zombie> _zombies;
 
         private readonly MusicPlayer _musicPlayer;
@@ -28,7 +30,6 @@ namespace ZombieGame
         private GameState _state;
         private bool _deathHandled = false;
         private Point _lastMousePos;
-
 
         private Rectangle _tryAgainBtn, _backToMenuBtn;
 
@@ -38,7 +39,8 @@ namespace ZombieGame
             _map = new Map(1024, 1024, "map.png");
             _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _zombies = new List<Zombie>();
-            _waveManager = new WaveManager(_zombies, _map, _player);
+            _enemyProjectiles = new List<Projectile>();   // <--- NEU!
+            _waveManager = new WaveManager(_zombies, _map, _player, _enemyProjectiles); // <--- NEU!
 
             _camera = new Camera(screenSize, _player) { Zoom = 1.9f };
             _pickups = new List<Entity>();
@@ -50,7 +52,6 @@ namespace ZombieGame
             Debug.WriteLine($"Loading MP3: {filePath}");
             Debug.WriteLine("Exists? " + File.Exists(filePath));
             _musicPlayer.Play(filePath, loop: true);
-
 
             _state = GameState.Playing;
         }
@@ -71,12 +72,8 @@ namespace ZombieGame
             if (Form.ActiveForm != null)
                 _lastMousePos = Form.ActiveForm.PointToClient(Cursor.Position);
 
-
             _waveManager.Update();
-
-
             _player.Update();
-
 
             var pos = _player.Position;
             pos.X = Math.Max(0f, Math.Min(pos.X, _map.Width - _player.Size.Width));
@@ -84,6 +81,7 @@ namespace ZombieGame
             _player.Position = pos;
 
             var playerRect = new RectangleF(_player.Position, _player.Size);
+
             foreach (var z in _zombies)
             {
                 z.Update();
@@ -102,7 +100,40 @@ namespace ZombieGame
                 }
             }
 
+            // ---------- FEINDLICHE PROJEKTILE UPDATEN & KOLLISION MIT SPIELER PRÜFEN ----------
+            for (int i = _enemyProjectiles.Count - 1; i >= 0; i--)
+            {
+                _enemyProjectiles[i].Update(1f / 60f); // Oder dein echtes deltaTime
 
+                // Projektil-Kollisionsrechteck (an Kugelgröße anpassen)
+                var projRect = new RectangleF(
+                    _enemyProjectiles[i].Position.X - 4,
+                    _enemyProjectiles[i].Position.Y - 4,
+                    14, 14);
+
+                // Kollision mit Spieler?
+                if (projRect.IntersectsWith(playerRect))
+                {
+                    _player.Damage(10); // Hier kannst du den Schaden anpassen!
+                    _enemyProjectiles.RemoveAt(i);
+
+                    // GameOver-Check direkt nach Schaden
+                    if (_player.Health <= 0 && !_deathHandled)
+                    {
+                        _deathHandled = true;
+                        _state = GameState.GameOver;
+                        return;
+                    }
+                    continue;
+                }
+
+                // Lebenszeit abgelaufen?
+                if (!_enemyProjectiles[i].IsAlive)
+                    _enemyProjectiles.RemoveAt(i);
+            }
+            // -------------------------------------------------------------------------
+
+            // Pickups
             for (int i = _pickups.Count - 1; i >= 0; i--)
             {
                 var pu = _pickups[i];
@@ -115,7 +146,7 @@ namespace ZombieGame
                 }
             }
 
-
+            // Bullets
             for (int i = _bullets.Count - 1; i >= 0; i--)
             {
                 var b = _bullets[i];
@@ -148,7 +179,6 @@ namespace ZombieGame
                 _player.ResetFireCooldown();
             }
 
-
             _camera.Update();
         }
 
@@ -163,15 +193,18 @@ namespace ZombieGame
                 return;
             }
 
-
             g.ScaleTransform(_camera.Zoom, _camera.Zoom);
             g.TranslateTransform(-_camera.Position.X, -_camera.Position.Y);
             _map.Draw(g);
             foreach (var pu in _pickups) pu.Draw(g);
             _player.Draw(g);
+
+            // <--- ZOMBIE-PROJEKTILE ZEICHNEN!
+            foreach (var proj in _enemyProjectiles)
+                proj.Draw(g);
+
             foreach (var z in _zombies) z.Draw(g);
             foreach (var b in _bullets) b.Draw(g);
-
 
             g.ResetTransform();
             UI.DrawGame(g, _player, _waveManager, _screenSize);
@@ -181,7 +214,6 @@ namespace ZombieGame
 
         private void DrawGameOverScreen(Graphics g)
         {
-
             const string msg = "YOU ARE DEAD";
             using (var font = new Font("Arial", 48, FontStyle.Bold))
             {
@@ -190,7 +222,6 @@ namespace ZombieGame
                     (_screenSize.Width - sz.Width) / 2,
                     _screenSize.Height / 3);
             }
-
 
             int w = 200, h = 50, gap = 20;
             int cx = (_screenSize.Width - w) / 2;
@@ -214,7 +245,6 @@ namespace ZombieGame
                     r.Y + (r.Height - sz.Height) / 2);
             }
         }
-
 
         public bool HandleMouseClick(MouseEventArgs e)
         {
@@ -251,7 +281,8 @@ namespace ZombieGame
 
             // Zombies & Waves neu initialisieren
             _zombies.Clear();
-            _waveManager = new WaveManager(_zombies, _map, _player);
+            _enemyProjectiles.Clear(); // <--- NEU!
+            _waveManager = new WaveManager(_zombies, _map, _player, _enemyProjectiles); // <--- NEU!
 
             // Pickups & Bullets neu setzen
             _pickups.Clear();
