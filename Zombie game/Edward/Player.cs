@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Entities/Player.cs
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -9,11 +10,15 @@ namespace ZombieGame.Entities
 {
     public class Player : Entity
     {
-        private static readonly Bitmap IdleFrame;
-        private static readonly Bitmap[] RunFrames;
+        // Idle-Frames
+        private static readonly Bitmap IdlePistolFrame;
+        private static readonly Bitmap IdleRifleFrame;
+        // Run-Frames
+        private static readonly Bitmap[] RunPistolFrames;
+        private static readonly Bitmap[] RunRifleFrames;
         private static readonly SizeF EntitySize;
         private const int MaxHealth = 100;
-        private const float Scale = 0.7f; 
+        private const float Scale = 0.7f;
 
         private readonly PointF _startPosition;
         private bool _facingRight = true;
@@ -26,32 +31,50 @@ namespace ZombieGame.Entities
         private readonly List<string> _inventory = new List<string>();
         private int _curWeap;
         private int _fireCd;
+        private int _money;
 
         public int Health { get; private set; }
 
         static Player()
         {
-            // Idle-Frame laden
-            string idlePath = Path.Combine(Application.StartupPath, "Assets", "player_idle.png");
-            if (!File.Exists(idlePath))
-                throw new FileNotFoundException("player_idle.png nicht gefunden", idlePath);
-            IdleFrame = new Bitmap(idlePath);
+            string assets = Path.Combine(Application.StartupPath, "Assets");
 
-            // Run-Spritesheet laden und in zwei Frames splitten
-            string runPath = Path.Combine(Application.StartupPath, "Assets", "player_run.png");
-            if (!File.Exists(runPath))
-                throw new FileNotFoundException("player_run.png nicht gefunden", runPath);
-            using (var sheet = new Bitmap(runPath))
+            // Idle-Pistole
+            string idlePPath = Path.Combine(assets, "idle_pistol.png");
+            if (!File.Exists(idlePPath)) throw new FileNotFoundException("idle_pistol.png nicht gefunden", idlePPath);
+            IdlePistolFrame = new Bitmap(idlePPath);
+
+            // Idle-Rifle
+            string idleRPath = Path.Combine(assets, "idle_rifle.png");
+            if (!File.Exists(idleRPath)) throw new FileNotFoundException("idle_rifle.png nicht gefunden", idleRPath);
+            IdleRifleFrame = new Bitmap(idleRPath);
+
+            // Run-Pistole (Sheet mit 2 Frames nebeneinander)
+            string runPPath = Path.Combine(assets, "run_pistol.png");
+            if (!File.Exists(runPPath)) throw new FileNotFoundException("run_pistol.png nicht gefunden", runPPath);
+            using (var sheet = new Bitmap(runPPath))
             {
-                int frameWidth = sheet.Width / 2;
-                int frameHeight = sheet.Height;
-                RunFrames = new Bitmap[2];
-                RunFrames[0] = sheet.Clone(new Rectangle(0, 0, frameWidth, frameHeight), sheet.PixelFormat);
-                RunFrames[1] = sheet.Clone(new Rectangle(frameWidth, 0, frameWidth, frameHeight), sheet.PixelFormat);
+                int w = sheet.Width / 2, h = sheet.Height;
+                RunPistolFrames = new Bitmap[2];
+                RunPistolFrames[0] = sheet.Clone(new Rectangle(0, 0, w, h), sheet.PixelFormat);
+                RunPistolFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
             }
 
-            // EntitySize basierend auf Scale
-            EntitySize = new SizeF(IdleFrame.Width * Scale, IdleFrame.Height * Scale);
+            // Run-Rifle (Sheet mit 2 Frames nebeneinander)
+            string runRPath = Path.Combine(assets, "run_rifle.png");
+            if (!File.Exists(runRPath)) throw new FileNotFoundException("run_rifle.png nicht gefunden", runRPath);
+            using (var sheet = new Bitmap(runRPath))
+            {
+                int w = sheet.Width / 2, h = sheet.Height;
+                RunRifleFrames = new Bitmap[2];
+                RunRifleFrames[0] = sheet.Clone(new Rectangle(0, 0, w, h), sheet.PixelFormat);
+                RunRifleFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
+            }
+
+            // Größe anhand der größten Idle-Frame (optional)
+            float width = Math.Max(IdlePistolFrame.Width, IdleRifleFrame.Width) * Scale;
+            float height = Math.Max(IdlePistolFrame.Height, IdleRifleFrame.Height) * Scale;
+            EntitySize = new SizeF(width, height);
         }
 
         public Player(PointF start)
@@ -72,7 +95,9 @@ namespace ZombieGame.Entities
             _currentFrame = 0;
             _frameTimer = 0;
             _pressed.Clear();
-            _currentAnim = new[] { IdleFrame };
+            // Initial Idle-Animation nach aktueller Waffe
+            _currentAnim = new[] { IdlePistolFrame };
+            _money = 0;
         }
 
         public void Reset()
@@ -94,15 +119,15 @@ namespace ZombieGame.Entities
             float len = (float)Math.Sqrt(dx * dx + dy * dy);
             bool moving = len > 0;
 
+            // Wähle Animation basierend auf Bewegung + Waffe
             if (moving)
             {
-                _currentAnim = RunFrames;
                 _facingRight = dx >= 0;
                 dx /= len; dy /= len;
-                Position = new PointF(
-                    Position.X + dx * Speed,
-                    Position.Y + dy * Speed
-                );
+                Position = new PointF(Position.X + dx * Speed, Position.Y + dy * Speed);
+
+                // Auswahl Run-Frames nach Waffe
+                _currentAnim = (_curWeap == 0) ? RunPistolFrames : RunRifleFrames;
 
                 if (++_frameTimer >= FrameInterval)
                 {
@@ -112,7 +137,8 @@ namespace ZombieGame.Entities
             }
             else
             {
-                _currentAnim = new[] { IdleFrame };
+                // Auswahl Idle-Frame nach Waffe
+                _currentAnim = new[] { (_curWeap == 0) ? IdlePistolFrame : IdleRifleFrame };
                 _currentFrame = 0;
                 _frameTimer = 0;
             }
@@ -123,77 +149,64 @@ namespace ZombieGame.Entities
         public override void Draw(Graphics g)
         {
             var frame = _currentAnim[_currentFrame];
+            float w = EntitySize.Width, h = EntitySize.Height;
+            float cx = Position.X, cy = Position.Y;
+            float x = cx - w / 2, y = cy - h / 2;
 
-            // Zielgröße und Position berechnen
-            float drawW = EntitySize.Width;
-            float drawH = EntitySize.Height;
-            float centerX = Position.X;
-            float centerY = Position.Y;
-            float drawX = centerX - drawW / 2f;
-            float drawY = centerY - drawH / 2f;
-
-            // --- Weicher Schatten-Kreis etwas höher und größer ---
-            float ellipseW = drawW * 1.1f;    
-            float ellipseH = drawH * 0.3f;
-            // horizontale Mitte
-            float ellipseX = centerX - ellipseW / 2f;
-
-            float ellipseY = centerY + drawH / 2f - ellipseH + 8f;
-
+            // Schatten wie gehabt
+            float sw = w * 1.1f, sh = h * 0.3f;
+            float sx = cx - sw / 2, sy = cy + h / 2 - sh + 8f;
             using (var path = new GraphicsPath())
             {
-                var shadowRect = new RectangleF(ellipseX, ellipseY, ellipseW, ellipseH);
-                path.AddEllipse(shadowRect);
+                path.AddEllipse(new RectangleF(sx, sy, sw, sh));
                 using (var pgb = new PathGradientBrush(path))
                 {
                     pgb.CenterColor = Color.FromArgb(140, 0, 0, 0);
                     pgb.SurroundColors = new[] { Color.FromArgb(0, 0, 0, 0) };
                     pgb.FocusScales = new PointF(0.5f, 0.5f);
                     g.SmoothingMode = SmoothingMode.AntiAlias;
-                    g.FillEllipse(pgb, shadowRect);
+                    g.FillEllipse(pgb, new RectangleF(sx, sy, sw, sh));
                 }
             }
-            // zurück auf pixel-art Modus
             g.SmoothingMode = SmoothingMode.None;
 
-            // Sprite selbst in Pixel-Optik zeichnen
+            // Sprite zeichnen
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.Half;
-
             var state = g.Save();
-            if (_facingRight)
-            {
-                g.DrawImage(frame, drawX, drawY, drawW, drawH);
-            }
+            if (_facingRight) g.DrawImage(frame, x, y, w, h);
             else
             {
-                g.TranslateTransform(drawX + drawW, drawY);
+                g.TranslateTransform(x + w, y);
                 g.ScaleTransform(-1, 1);
-                g.DrawImage(frame, 0, 0, drawW, drawH);
+                g.DrawImage(frame, 0, 0, w, h);
             }
             g.Restore(state);
-
-            // Grafik-Modi zurücksetzen
             g.InterpolationMode = InterpolationMode.Default;
             g.PixelOffsetMode = PixelOffsetMode.Default;
-            g.SmoothingMode = SmoothingMode.None;
         }
 
         public void OnKeyDown(KeyEventArgs e)
         {
             _pressed.Add(e.KeyCode);
+            // Waffenwechsel per Zahlentasten
             if (e.KeyCode >= Keys.D1 && e.KeyCode < Keys.D1 + _inventory.Count)
+            {
                 _curWeap = e.KeyCode - Keys.D1;
+                // sofort Idle-Frame wechseln und Cooldown zurücksetzen
+                _currentFrame = 0;
+                _frameTimer = 0;
+                _currentAnim = new[] { (_curWeap == 0) ? IdlePistolFrame : IdleRifleFrame };
+                ResetFireCooldown();
+            }
         }
 
         public void OnKeyUp(KeyEventArgs e) => _pressed.Remove(e.KeyCode);
 
         public bool CanFire() => _fireCd <= 0;
-
         public void ResetFireCooldown() => _fireCd = (_curWeap == 0) ? 15 : 5;
 
         public PointF GetCenter() => new PointF(Position.X, Position.Y);
-
         public int GetCurrentWeaponDamage() => (_curWeap == 0) ? 25 : 50;
         public int GetCurrentWeaponIndex() => _curWeap;
         public List<string> GetInventory() => _inventory;
@@ -205,5 +218,9 @@ namespace ZombieGame.Entities
         }
 
         public void Damage(int amt) => Health = Math.Max(0, Health - amt);
+
+        // --- Geld-Methoden ---
+        public void AddMoney(int amount) => _money += amount;
+        public int GetMoney() => _money;
     }
 }
