@@ -1,0 +1,20 @@
+Wochenbericht – Informatik-Projekt
+
+Zeitraum: [15.06.2025 bis 22.06.2025]
+Projektgruppe: [Enzu Games]
+
+1. Candy Crush ähnliches Game
+In dieser Woche haben wir das Hauptmenü unseres Candy Crush Games fertig programmiert. Das Menü ermöglicht nun Navigation zwischen den Menüs wie zb Start und Einstellungen. Zudem ist es möglich das Spiel zu beenden.
+
+2. Zombie-Spiel (Edwards Projekt)
+Neu in unserer Gruppe ist Edward, der sein Zombie-Spiel mit in das Team bringt. Gemeinsam haben wir folgende Erweiterungen und Verbesserungen umgesetzt:
+
+Shop-Form: Ein Shop-System wurde eingebaut, in dem die Spieler Upgrades oder Gegenstände erwerben können.
+
+Neuer Gegnertyp: Das Spiel wurde um einen neuen Gegnertyp erweitert, der für zusätzliche Herausforderungen sorgt.
+
+Verbessertes UI: Das User Interface wurde überarbeitet und verbessert, um die Bedienung zu vereinfachen.
+
+Fazit:
+Wir konnten diese Woche in beiden Projekten große Fortschritte erzielen und profitieren von der Zusammenarbeit in der erweiterten Gruppe. Die nächsten Schritte sind weitere Verbesserungen an den Spielelementen und das Testen der neuen Features.
+
