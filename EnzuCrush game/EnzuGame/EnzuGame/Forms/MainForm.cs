@@ -116,14 +116,15 @@ namespace EnzuGame.Forms
 
         private void BtnStart_Click(object? sender, EventArgs e)
         {
-           // if (activeLevelSelectForm == null || activeLevelSelectForm.IsDisposed)
-          //  {
-           //     activeLevelSelectForm.FormClosed += (_, _) => { activeLevelSelectForm = null; Show(); };
-          //      Hide();
-          //      activeLevelSelectForm.StartPosition = FormStartPosition.CenterScreen;
-         //       activeLevelSelectForm.ShowDialog(this);
-         //   }
-         //   else { activeLevelSelectForm.Activate(); }
+            if (activeLevelSelectForm == null || activeLevelSelectForm.IsDisposed)
+            {
+                activeLevelSelectForm = new LevelSelectForm();
+                activeLevelSelectForm.FormClosed += (_, _) => { activeLevelSelectForm = null; Show(); };
+                Hide();
+                activeLevelSelectForm.StartPosition = FormStartPosition.CenterScreen;
+                activeLevelSelectForm.ShowDialog(this);
+            }
+            else { activeLevelSelectForm.Activate(); }
         }
 
         private void BtnSettings_Click(object? sender, EventArgs e)

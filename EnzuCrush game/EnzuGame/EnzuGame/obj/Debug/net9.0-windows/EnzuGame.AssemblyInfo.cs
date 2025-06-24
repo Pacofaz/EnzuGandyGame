@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnzuGame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c0b5de18fab90978a916effcf82188e455ee4a9")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnzuGame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnzuGame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
