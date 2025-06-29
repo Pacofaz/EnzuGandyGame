@@ -142,9 +142,22 @@ namespace ZombieGame.Utils
             foreach (var z in w.Zombies)
                 g.FillEllipse(Brushes.Red, mX + z.Position.X * scX - 2, mY + z.Position.Y * scY - 2, 4, 4);
 
-            // 6) Money unter Minimap
+            // 6) Money unter der Minimap mit Outline
+            int moneyX = mX;
+            int moneyY = minimapOffsetTop + minimapSize + 8;
             using (var fm = new Font("Segoe Print", 16, FontStyle.Regular))
-                g.DrawString($"Money: ${p.GetMoney()}", fm, Brushes.White, mX, mY + minimapSize + 8);
+            {
+                string moneyTxt = $"Money: ${p.GetMoney()}";
+                float em = fm.Size * g.DpiY / 72f;
+                var pos = new PointF(moneyX, moneyY);
+                using (var path = new GraphicsPath())
+                {
+                    path.AddString(moneyTxt, fm.FontFamily, (int)fm.Style, em, pos, StringFormat.GenericDefault);
+                    using (var pen = new Pen(Color.Black, 4) { LineJoin = LineJoin.Round })
+                        g.DrawPath(pen, path);
+                    g.FillPath(Brushes.White, path);
+                }
+            }
         }
 
         public static void DrawPause(Graphics g, Size screen)

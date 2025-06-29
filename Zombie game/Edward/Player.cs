@@ -39,7 +39,7 @@ namespace ZombieGame.Entities
         {
             string assets = Path.Combine(Application.StartupPath, "Assets");
 
-            // Idle-Pistole
+            // Idle-Pistol
             string idlePPath = Path.Combine(assets, "idle_pistol.png");
             if (!File.Exists(idlePPath)) throw new FileNotFoundException("idle_pistol.png nicht gefunden", idlePPath);
             IdlePistolFrame = new Bitmap(idlePPath);
@@ -49,7 +49,7 @@ namespace ZombieGame.Entities
             if (!File.Exists(idleRPath)) throw new FileNotFoundException("idle_rifle.png nicht gefunden", idleRPath);
             IdleRifleFrame = new Bitmap(idleRPath);
 
-            // Run-Pistole (Sheet mit 2 Frames nebeneinander)
+            // Run-Pistol (2 Frames)
             string runPPath = Path.Combine(assets, "run_pistol.png");
             if (!File.Exists(runPPath)) throw new FileNotFoundException("run_pistol.png nicht gefunden", runPPath);
             using (var sheet = new Bitmap(runPPath))
@@ -60,7 +60,7 @@ namespace ZombieGame.Entities
                 RunPistolFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
             }
 
-            // Run-Rifle (Sheet mit 2 Frames nebeneinander)
+            // Run-Rifle (2 Frames)
             string runRPath = Path.Combine(assets, "run_rifle.png");
             if (!File.Exists(runRPath)) throw new FileNotFoundException("run_rifle.png nicht gefunden", runRPath);
             using (var sheet = new Bitmap(runRPath))
@@ -71,7 +71,7 @@ namespace ZombieGame.Entities
                 RunRifleFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
             }
 
-            // Größe anhand der größten Idle-Frame (optional)
+            // Größe basierend auf größter Idle-Frame
             float width = Math.Max(IdlePistolFrame.Width, IdleRifleFrame.Width) * Scale;
             float height = Math.Max(IdlePistolFrame.Height, IdleRifleFrame.Height) * Scale;
             EntitySize = new SizeF(width, height);
@@ -95,7 +95,6 @@ namespace ZombieGame.Entities
             _currentFrame = 0;
             _frameTimer = 0;
             _pressed.Clear();
-            // Initial Idle-Animation nach aktueller Waffe
             _currentAnim = new[] { IdlePistolFrame };
             _money = 0;
         }
@@ -119,16 +118,13 @@ namespace ZombieGame.Entities
             float len = (float)Math.Sqrt(dx * dx + dy * dy);
             bool moving = len > 0;
 
-            // Wähle Animation basierend auf Bewegung + Waffe
             if (moving)
             {
                 _facingRight = dx >= 0;
                 dx /= len; dy /= len;
                 Position = new PointF(Position.X + dx * Speed, Position.Y + dy * Speed);
 
-                // Auswahl Run-Frames nach Waffe
                 _currentAnim = (_curWeap == 0) ? RunPistolFrames : RunRifleFrames;
-
                 if (++_frameTimer >= FrameInterval)
                 {
                     _frameTimer = 0;
@@ -137,7 +133,6 @@ namespace ZombieGame.Entities
             }
             else
             {
-                // Auswahl Idle-Frame nach Waffe
                 _currentAnim = new[] { (_curWeap == 0) ? IdlePistolFrame : IdleRifleFrame };
                 _currentFrame = 0;
                 _frameTimer = 0;
@@ -153,7 +148,7 @@ namespace ZombieGame.Entities
             float cx = Position.X, cy = Position.Y;
             float x = cx - w / 2, y = cy - h / 2;
 
-            // Schatten wie gehabt
+            // Schatten
             float sw = w * 1.1f, sh = h * 0.3f;
             float sx = cx - sw / 2, sy = cy + h / 2 - sh + 8f;
             using (var path = new GraphicsPath())
@@ -170,7 +165,7 @@ namespace ZombieGame.Entities
             }
             g.SmoothingMode = SmoothingMode.None;
 
-            // Sprite zeichnen
+            // Sprite
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.Half;
             var state = g.Save();
@@ -189,15 +184,9 @@ namespace ZombieGame.Entities
         public void OnKeyDown(KeyEventArgs e)
         {
             _pressed.Add(e.KeyCode);
-            // Waffenwechsel per Zahlentasten
             if (e.KeyCode >= Keys.D1 && e.KeyCode < Keys.D1 + _inventory.Count)
             {
-                _curWeap = e.KeyCode - Keys.D1;
-                // sofort Idle-Frame wechseln und Cooldown zurücksetzen
-                _currentFrame = 0;
-                _frameTimer = 0;
-                _currentAnim = new[] { (_curWeap == 0) ? IdlePistolFrame : IdleRifleFrame };
-                ResetFireCooldown();
+                SetCurrentWeaponIndex(e.KeyCode - Keys.D1);
             }
         }
 
@@ -222,5 +211,19 @@ namespace ZombieGame.Entities
         // --- Geld-Methoden ---
         public void AddMoney(int amount) => _money += amount;
         public int GetMoney() => _money;
+
+        /// <summary>
+        /// Wechselt die aktuelle Waffe (Slot 0 = Pistol, 1 = Rifle, …).
+        /// </summary>
+        public void SetCurrentWeaponIndex(int index)
+        {
+            if (index < 0 || index >= _inventory.Count) return;
+
+            _curWeap = index;
+            _currentFrame = 0;
+            _frameTimer = 0;
+            _currentAnim = new[] { (_curWeap == 0) ? IdlePistolFrame : IdleRifleFrame };
+            ResetFireCooldown();
+        }
     }
 }

@@ -172,7 +172,10 @@ namespace ZombieGame
                         _bullets.RemoveAt(i);
                         if (z.Health <= 0)
                         {
-                            _player.AddMoney(10);
+                            // Geld pro Kill
+                            const int moneyPerKill = 10;
+                            _player.AddMoney(moneyPerKill);
+
                             _zombies.RemoveAt(j);
                         }
                         break;
@@ -232,11 +235,9 @@ namespace ZombieGame
 
         private void DrawShopOverlay(Graphics g)
         {
-            // halbtransparenten Hintergrund
             using (var b = new SolidBrush(Color.FromArgb(160, 0, 0, 0)))
                 g.FillRectangle(b, 0, 0, _screenSize.Width, _screenSize.Height);
 
-            // Shop-Fenster
             int w = 400, h = 250;
             int x = (_screenSize.Width - w) / 2, y = (_screenSize.Height - h) / 2;
             g.FillRectangle(Brushes.Gray, x, y, w, h);
@@ -249,12 +250,9 @@ namespace ZombieGame
                 g.DrawString(title, titleF, Brushes.White, x + (w - tsz.Width) / 2, y + 10);
             }
 
-            // Buttons definieren
-            int bw = 180, bh = 50, gap = 20;
-            _shopBuyBtn = new Rectangle(x + 20, y + 80, bw, bh);
-            _shopContinueBtn = new Rectangle(x + w - bw - 20, y + 80, bw, bh);
+            _shopBuyBtn = new Rectangle(x + 20, y + 80, 180, 50);
+            _shopContinueBtn = new Rectangle(x + w - 200 - 20, y + 80, 180, 50);
 
-            // pulsende Skalierung für Buy-Button
             float scale = 1f;
             if (_justBought && _buyPulseTimer > 0)
             {
@@ -263,7 +261,6 @@ namespace ZombieGame
                 if (_buyPulseTimer == 0) _justBought = false;
             }
 
-            // Buy-Button transformiert
             var c = new PointF(_shopBuyBtn.X + _shopBuyBtn.Width / 2f, _shopBuyBtn.Y + _shopBuyBtn.Height / 2f);
             g.TranslateTransform(c.X, c.Y);
             g.ScaleTransform(scale, scale);
@@ -271,7 +268,6 @@ namespace ZombieGame
             DrawSimpleButton(g, _shopBuyBtn, "20 HP für $15");
             g.ResetTransform();
 
-            // Continue-Button normal
             DrawSimpleButton(g, _shopContinueBtn, "Weiter");
         }
 
@@ -368,7 +364,6 @@ namespace ZombieGame
 
         public void OnKeyDown(KeyEventArgs e)
         {
-            // Hotbar 1–5
             if (_state == GameState.Playing &&
                 e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D5)
             {

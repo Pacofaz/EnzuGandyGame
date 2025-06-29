@@ -6,7 +6,7 @@ namespace ZombieGame.Enums
         Playing,
         Paused,
         Inventory,
-        GameOver,
-        Shop        // neu
+          Shop,
+        GameOver
     }
 }
