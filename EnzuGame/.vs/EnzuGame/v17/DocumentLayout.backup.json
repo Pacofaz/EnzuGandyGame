@@ -11,28 +11,24 @@
       "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\formintro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|C:\\Users\\recke\\Desktop\\EnzuGame\\enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|C:\\Users\\recke\\Desktop\\EnzuGame\\enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\forms\\levelselectform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\levelselectform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\baseform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|c:\\users\\recke\\desktop\\enzugame\\enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|C:\\Users\\recke\\Desktop\\EnzuGame\\enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|solutionrelative:enzugame\\forms\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{66AA8434-3956-44BF-906F-20EED3C0BD2E}|EnzuGame\\EnzuGame.csproj|C:\\Users\\recke\\Desktop\\EnzuGame\\enzugame\\forms\\levelselectform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
@@ -90,7 +86,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -98,61 +94,40 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "BaseForm.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\BaseForm.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGandyGame\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs [Entwurf]",
-              "RelativeToolTip": "..\\EnzuGandyGame\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs [Entwurf]",
+              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs [Entwurf]",
+              "RelativeToolTip": "EnzuGame\\Forms\\BaseForm.cs [Entwurf]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-30T22:30:29.241Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "MainForm.cs [Entwurf]",
-              "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs",
-              "RelativeDocumentMoniker": "EnzuGame\\Forms\\MainForm.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGandyGame\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs [Entwurf]",
-              "RelativeToolTip": "..\\EnzuGandyGame\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs [Entwurf]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T14:01:18.157Z"
+              "WhenOpened": "2025-07-01T19:20:25.017Z",
+              "EditorCaption": " [Entwurf]"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "FormIntro.cs [Design]",
+              "Title": "FormIntro.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\FormIntro.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs [Design]",
-              "RelativeToolTip": "EnzuGame\\Forms\\FormIntro.cs [Design]",
+              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs [Entwurf]*",
+              "RelativeToolTip": "EnzuGame\\Forms\\FormIntro.cs [Entwurf]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-30T21:33:14.27Z",
-              "EditorCaption": " [Design]"
+              "EditorCaption": " [Entwurf]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "BaseForm.cs",
-              "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs",
-              "RelativeDocumentMoniker": "EnzuGame\\Forms\\BaseForm.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\BaseForm.cs",
-              "RelativeToolTip": "EnzuGame\\Forms\\BaseForm.cs",
-              "ViewState": "AgIAACwAAAAAAAAAAAAwwEEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T14:05:02.663Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "MainForm.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\MainForm.cs",
               "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs",
               "RelativeToolTip": "EnzuGame\\Forms\\MainForm.cs",
-              "ViewState": "AgIAAHUAAAAAAAAAAAAkwH0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T14:08:45.585Z"
+              "WhenOpened": "2025-06-11T14:08:45.585Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -160,28 +135,54 @@
               "Title": "FormIntro.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\FormIntro.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs",
-              "RelativeToolTip": "EnzuGame\\Forms\\FormIntro.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAuwDMAAAAjAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\FormIntro.cs*",
+              "RelativeToolTip": "EnzuGame\\Forms\\FormIntro.cs*",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAYwFcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-30T21:33:30.353Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Program.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Program.cs",
               "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Program.cs",
               "RelativeToolTip": "EnzuGame\\Program.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAYwCQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T14:04:07.261Z"
+              "WhenOpened": "2025-06-11T14:04:07.261Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 3,
+              "Title": "LevelSelectForm.cs",
+              "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\LevelSelectForm.cs",
+              "RelativeDocumentMoniker": "EnzuGame\\Forms\\LevelSelectForm.cs",
+              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\LevelSelectForm.cs",
+              "RelativeToolTip": "EnzuGame\\Forms\\LevelSelectForm.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T14:08:05.738Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainForm.cs [Entwurf]",
+              "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs",
+              "RelativeDocumentMoniker": "EnzuGame\\Forms\\MainForm.cs",
+              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\MainForm.cs [Entwurf]",
+              "RelativeToolTip": "EnzuGame\\Forms\\MainForm.cs [Entwurf]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-11T14:01:18.157Z",
+              "EditorCaption": " [Entwurf]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "level1Form.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\level1Form.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\level1Form.cs",
@@ -194,20 +195,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "LevelSelectForm.cs",
-              "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\LevelSelectForm.cs",
-              "RelativeDocumentMoniker": "EnzuGame\\Forms\\LevelSelectForm.cs",
-              "ToolTip": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\LevelSelectForm.cs",
-              "RelativeToolTip": "EnzuGame\\Forms\\LevelSelectForm.cs",
-              "ViewState": "AgIAANIAAAAAAAAAAAAkwOIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-11T14:08:05.738Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 9,
               "Title": "level1Form.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\level1Form.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\level1Form.cs",
@@ -218,7 +206,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 7,
               "Title": "LevelSelectForm.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\LevelSelectForm.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\LevelSelectForm.cs",
@@ -229,7 +217,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 10,
               "Title": "SoundManager.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\SoundManager.cs",
               "RelativeDocumentMoniker": "EnzuGame\\SoundManager.cs",
@@ -241,7 +229,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 11,
               "Title": "GameSettings.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Klassen\\GameSettings.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Klassen\\GameSettings.cs",
@@ -253,7 +241,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 12,
               "Title": "level2Form.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\level2Form.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\level2Form.cs",
@@ -266,7 +254,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 13,
               "Title": "level2Form.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\level2Form.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\level2Form.cs",
@@ -277,7 +265,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 14,
               "Title": "ImageButton.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Klassen\\ImageButton.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Klassen\\ImageButton.cs",
@@ -289,7 +277,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 17,
               "Title": "SettignsForm.Designer.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\SettignsForm.Designer.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\SettignsForm.Designer.cs",
@@ -301,7 +289,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 15,
               "Title": "background.png",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Resources\\levels\\background.png",
               "RelativeDocumentMoniker": "EnzuGame\\Resources\\levels\\background.png",
@@ -312,7 +300,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 18,
               "Title": "level1Form.Designer.cs",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\level1Form.Designer.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\level1Form.Designer.cs",
@@ -324,7 +312,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 16,
               "Title": "SettignsForm.cs [Entwurf]",
               "DocumentMoniker": "C:\\Users\\recke\\Desktop\\EnzuGame\\EnzuGame\\Forms\\SettignsForm.cs",
               "RelativeDocumentMoniker": "EnzuGame\\Forms\\SettignsForm.cs",

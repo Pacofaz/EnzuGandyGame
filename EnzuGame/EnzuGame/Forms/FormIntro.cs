@@ -9,7 +9,8 @@ namespace EnzuGame.Forms
     {
         private System.Windows.Forms.Timer introTimer;
         private SkipOverlayForm overlayForm;
-        private readonly string skipText = "Leertaste drücken, um zu überspringen";
+        // Text für Overlay OHNE Leertaste
+        private readonly string skipText = ""; // Kein Text mehr nötig
 
         public FormIntro()
         {
@@ -23,7 +24,7 @@ namespace EnzuGame.Forms
             this.Size = screen.Bounds.Size;
             this.DoubleBuffered = true;
             this.KeyPreview = true;
-            this.KeyDown += FormIntro_KeyDown;
+            // Kein KeyDown-Event mehr
 
             // Musik fürs Intro
             SoundManager.SetMusicVolume(0.2f);
@@ -73,23 +74,18 @@ namespace EnzuGame.Forms
             this.Resize += (s, e) => SyncOverlayPosition();
         }
 
-        private void FormIntro_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Space)
-            {
-                introTimer.Stop();
-                CloseIntro();
-            }
-        }
+        // --- KeyDown-Methode komplett entfernt ---
 
         private void CloseIntro()
         {
             try { axWindowsMediaPlayer1.Ctlcontrols.stop(); } catch { }
             SoundManager.SetMusicVolume(1.0f);
+
             if (overlayForm != null && !overlayForm.IsDisposed)
                 overlayForm.Close();
-            this.Close();
+            this.Close();  // NICHT MainForm öffnen!
         }
+
 
         private void SyncOverlayPosition()
         {
@@ -124,6 +120,7 @@ namespace EnzuGame.Forms
 
             private void SkipOverlayForm_Paint(object sender, PaintEventArgs e)
             {
+                if (string.IsNullOrEmpty(overlayText)) return; // Kein Text zeichnen
                 using (var font = new Font("Segoe UI", 22, FontStyle.Bold, GraphicsUnit.Pixel))
                 {
                     SizeF textSize = e.Graphics.MeasureString(overlayText, font);
