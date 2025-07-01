@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Media;  // Wichtig für den Sound
 
 namespace EnzuLauncherV2
 {
@@ -81,14 +82,34 @@ namespace EnzuLauncherV2
             e.Graphics.DrawString("Kostenlos", new Font("Segoe UI", 14, FontStyle.Regular), Brushes.LightGray, igorRect.X + igorRect.Width / 2, igorSubtitleY, centerFormat);
         }
 
+        // Sound abspielen
+        private void PlayClickSound()
+        {
+            try
+            {
+              
+                using (SoundPlayer player = new SoundPlayer("Resources/SoundClick1.wav"))
+                {
+                    player.Play();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Im Fehlerfall kein Absturz
+                Console.WriteLine("Sound konnte nicht abgespielt werden: " + ex.Message);
+            }
+        }
+
         private void FormMain_MouseClick(object sender, MouseEventArgs e)
         {
             if (candyRect.Contains(e.Location))
             {
+                PlayClickSound();
                 MessageBox.Show("Candy Game geklickt! (Hier kommt später das Preview-Fenster)");
             }
             else if (igorRect.Contains(e.Location))
             {
+                PlayClickSound();
                 MessageBox.Show("Igor Survival geklickt! (Hier kommt später das Preview-Fenster)");
             }
         }

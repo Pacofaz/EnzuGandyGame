@@ -22,3 +22,4 @@ C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\obj\Debug\EnzuLau
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\obj\Debug\EnzuLauncherV2.pdb
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\CandyGame.png
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\IgorSurvival.png
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\SoundClick1.wav
