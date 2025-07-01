@@ -100,6 +100,10 @@ namespace EnzuGame.Forms
 
             this.Shown += (s, e) => this.Focus();
         }
+        /// <summary>
+        /// Initialisiert die UI-Elemente wie Slider, Toggle-Buttons und die Action-Buttons (Speichern/Abbrechen).
+        /// Legt dabei die Positionen und Größen aller interaktiven Komponenten fest.
+        /// </summary>
 
         private void InitUI()
         {
@@ -120,6 +124,10 @@ namespace EnzuGame.Forms
             saveRect = new Rectangle(120, SaveCancelY, ActionBtnSize.Width, ActionBtnSize.Height);
             cancelRect = new Rectangle(260, SaveCancelY, ActionBtnSize.Width, ActionBtnSize.Height);
         }
+        /// <summary>
+        /// Registriert alle relevanten Eventhandler für die Bedienung des Settings-Fensters.
+        /// Dadurch reagieren Zeichenroutine, Maus- und Tastatureingaben korrekt.
+        /// </summary>
 
         private void RegisterEvents()
         {
@@ -129,6 +137,9 @@ namespace EnzuGame.Forms
             this.MouseUp += SettingsForm_MouseUp;
             this.KeyDown += SettingsForm_KeyDown;
         }
+        /// <summary>
+        /// Gibt den aktuellen Wert des angegebenen Sliders (Helligkeit, Musik, Sound) aus den temporären Einstellungen zurück.
+        /// </summary>
 
         private int GetSliderValue(SliderType type)
         {
@@ -140,6 +151,10 @@ namespace EnzuGame.Forms
                 _ => 0,
             };
         }
+        /// <summary>
+        /// Setzt den Wert des angegebenen Sliders im temporären Einstellungen-Objekt.
+        /// Führt bei Änderung der Musiklautstärke direkt eine Anpassung der Wiedergabelautstärke durch.
+        /// </summary>
 
         private void SetSliderValue(SliderType type, int value)
         {
@@ -157,6 +172,11 @@ namespace EnzuGame.Forms
                     break;
             }
         }
+        /// <summary>
+        /// Zeichnet das komplette User Interface des Settings-Fensters.
+        /// Dazu gehören Hintergrund, Titel, alle Slider, Buttons und Overlays.
+        /// Wird immer beim Aktualisieren des Fensters aufgerufen.
+        /// </summary>
 
         private void SettingsForm_Paint(object? sender, PaintEventArgs e)
         {
@@ -184,6 +204,10 @@ namespace EnzuGame.Forms
 
             ApplyBrightnessOverlay(g);
         }
+        /// <summary>
+        /// Zeichnet einen einzelnen runden Button mit Text innerhalb des angegebenen Rechtecks.
+        /// Wird für die Toggle-Buttons ("<", ">") im UI verwendet.
+        /// </summary>
 
         private void DrawButton(Graphics g, Rectangle rect, string text)
         {
@@ -194,6 +218,10 @@ namespace EnzuGame.Forms
                 g.DrawString(text, RegularFont, textBrush, new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
             }
         }
+        /// <summary>
+        /// Zeichnet einen Slider mit Titel, farbigem Füllbalken, Knopf und Prozentwert.
+        /// Wird für Helligkeit, Musiklautstärke und Soundlautstärke genutzt.
+        /// </summary>
 
         private void DrawSlider(Graphics g, string title, int value, Rectangle sliderRect, Point knobPos)
         {
@@ -247,6 +275,10 @@ namespace EnzuGame.Forms
                 g.DrawString(value + "%", RegularFont, textBrush, sliderRect.Right + 40, sliderRect.Y, sf);
             }
         }
+        /// <summary>
+        /// Zeichnet einen großen, abgerundeten Button mit Farbverlauf und zentriertem Text.
+        /// Wird für die "Speichern" und "Abbrechen" Aktionen verwendet.
+        /// </summary>
 
         private void DrawActionButton(Graphics g, Rectangle rect, string text, Color color)
         {
@@ -269,6 +301,10 @@ namespace EnzuGame.Forms
                 g.DrawString(text, RegularFont, textBrush, new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
             }
         }
+        /// <summary>
+        /// Zeichnet einen Text mit einem dezenten schwarzen Schatten, um einen leuchtenden (Glow-)Effekt zu erzeugen.
+        /// Optional kann der Text zentriert werden.
+        /// </summary>
 
         private void DrawGlowingText(Graphics g, string text, Font font, Color color, float x, float y, bool centered)
         {
@@ -289,6 +325,10 @@ namespace EnzuGame.Forms
                 }
             }
         }
+        /// <summary>
+        /// Zeichnet ein gefülltes Rechteck mit abgerundeten Ecken in der angegebenen Farbe.
+        /// Der Radius wird automatisch an die Rechteckgröße angepasst.
+        /// </summary>
 
         private void DrawRoundedRectangle(Graphics g, Rectangle rect, int radius, Color color)
         {
@@ -300,6 +340,10 @@ namespace EnzuGame.Forms
                 g.FillPath(brush, path);
             }
         }
+        /// <summary>
+        /// Erstellt und gibt einen GraphicsPath für ein Rechteck mit abgerundeten Ecken zurück.
+        /// Der Radius bestimmt, wie stark die Ecken abgerundet werden.
+        /// </summary>
 
         private GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
         {
@@ -333,6 +377,11 @@ namespace EnzuGame.Forms
             path.CloseFigure();
             return path;
         }
+        /// <summary>
+        /// Überlagert das gesamte Fenster mit einer halbtransparenten, schwarzen Fläche –
+        /// je nach Helligkeitseinstellung des Nutzers.
+        /// Je dunkler die Einstellung, desto stärker der Overlay.
+        /// </summary>
 
         private void ApplyBrightnessOverlay(Graphics g)
         {
@@ -346,6 +395,10 @@ namespace EnzuGame.Forms
                 }
             }
         }
+        /// <summary>
+        /// Berechnet die genaue Position des Schiebereglers (Knopf) auf dem Slider anhand eines Prozentwertes.
+        /// Gibt den Mittelpunkt des Knopfes zurück.
+        /// </summary>
 
         private static Point SliderKnobPos(Rectangle rect, int percent)
         {
@@ -357,6 +410,10 @@ namespace EnzuGame.Forms
             int y = rect.Y + rect.Height / 2;
             return new Point(x, y);
         }
+        /// <summary>
+        /// Erstellt einen Hintergrund mit vertikalem Farbverlauf und optionalem diagonalen Muster.
+        /// Gibt das fertige Bild (Bitmap) zurück.
+        /// </summary>
 
         private Image CreateGradientBackground(int width, int height)
         {
@@ -382,6 +439,10 @@ namespace EnzuGame.Forms
             }
             return bmp;
         }
+        /// <summary>
+        /// Eventhandler für Mausklick: Prüft, ob auf einen Slider-Knopf oder die Slider-Leiste geklickt wurde.
+        /// Setzt ggf. den aktiven (zu ziehenden) Slider.
+        /// </summary>
 
         private void SettingsForm_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -407,6 +468,11 @@ namespace EnzuGame.Forms
                 }
             }
         }
+        /// <summary>
+        /// Eventhandler für Mausbewegung:  
+        /// Aktualisiert ggf. den Sliderwert beim Ziehen und ändert den Cursor,
+        /// wenn die Maus über interaktiven Elementen schwebt (Slider, Buttons).
+        /// </summary>
 
         private void SettingsForm_MouseMove(object? sender, MouseEventArgs e)
         {
@@ -436,6 +502,11 @@ namespace EnzuGame.Forms
 
             this.Cursor = overInteractive ? Cursors.Hand : Cursors.Default;
         }
+        /// <summary>
+        /// Eventhandler für das Loslassen der Maustaste.
+        /// Beendet das Slider-Dragging und prüft, ob auf einen Button (Toggle, Speichern, Abbrechen) geklickt wurde.
+        /// Löst entsprechende Aktionen aus.
+        /// </summary>
 
         private void SettingsForm_MouseUp(object? sender, MouseEventArgs e)
         {
@@ -456,6 +527,10 @@ namespace EnzuGame.Forms
                 CancelAndRestore();
             }
         }
+        /// <summary>
+        /// Eventhandler für Tastatureingaben.
+        /// ESC schließt das Fenster und verwirft Änderungen, ENTER speichert die Einstellungen.
+        /// </summary>
 
         private void SettingsForm_KeyDown(object? sender, KeyEventArgs e)
         {
@@ -464,6 +539,10 @@ namespace EnzuGame.Forms
             else if (e.KeyCode == Keys.Enter)
                 SaveSettings();
         }
+        /// <summary>
+        /// Berechnet und setzt den neuen Wert eines Sliders anhand der aktuellen Mausposition.
+        /// Aktualisiert die Position des Knopfs, speichert den Wert und zeichnet das UI neu.
+        /// </summary>
 
         private void UpdateSliderValue(SliderType sliderType, int xPos)
         {
@@ -477,6 +556,10 @@ namespace EnzuGame.Forms
             SetSliderValue(sliderType, percentage);
             Invalidate();
         }
+        /// <summary>
+        /// Überträgt alle temporären Einstellungen in die globalen GameSettings.
+        /// Wendet die Änderungen an und schließt das Settings-Fenster.
+        /// </summary>
 
         private void SaveSettings()
         {
@@ -487,12 +570,20 @@ namespace EnzuGame.Forms
             GameSettings.ApplySettings();
             this.Close();
         }
+        /// <summary>
+        /// Stellt die ursprüngliche Musiklautstärke wieder her und schließt das Fenster, 
+        /// ohne die restlichen temporären Änderungen zu speichern.
+        /// </summary>
 
         private void CancelAndRestore()
         {
             SoundManager.SetMusicVolume(originalSettings.MusicVolume / 100.0f);
             this.Close();
         }
+        /// <summary>
+        /// Gibt alle verwendeten Ressourcen frei und deregistriert alle Eventhandler.
+        /// Wird beim Schließen oder Entsorgen des Fensters automatisch aufgerufen.
+        /// </summary>
 
         protected override void Dispose(bool disposing)
         {

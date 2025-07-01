@@ -8,10 +8,10 @@ using System.Windows.Forms;
 
 namespace EnzuGame.Forms
 {
-    public partial class LevelSelectForm : Forms.BaseForm
+    public partial class LevelSelectForm : BaseForm
     {
         private Image? backgroundImg;
-        private List<LevelButton> levelButtons = new List<LevelButton>();
+        private readonly List<LevelButton> levelButtons = new();
         private LevelButton? hoveredButton;
         private LevelButton? pressedButton;
         private Rectangle backButtonRect;
@@ -19,7 +19,7 @@ namespace EnzuGame.Forms
 
         private const float WidthFactor = 0.3f;
         private const float HeightFactor = 0.15f;
-        private readonly Size WindowedSize = new Size(1024, 768);
+        private readonly Size WindowedSize = new(1024, 768);
 
         public LevelSelectForm()
         {
@@ -97,7 +97,7 @@ namespace EnzuGame.Forms
                     Func<bool> unlocked = i switch
                     {
                         1 => () => true,
-                        2 => () => GameSettings.Level2Unlocked,   // <- Hier prüfst du das Freischalten
+                        2 => () => GameSettings.Level2Unlocked,
                         _ => () => false
                     };
 
@@ -219,12 +219,10 @@ namespace EnzuGame.Forms
             {
                 int level = pressedButton.LevelNumber;
                 OpenLevel(level);
-                // *** KEIN FREISCHALTEN MEHR HIER! ***
             }
             else if (backButtonPressed && backButtonHovered)
             {
                 this.Close();
-
             }
             pressedButton = null;
             backButtonPressed = false;
@@ -233,17 +231,16 @@ namespace EnzuGame.Forms
 
         private void OpenLevel(int level)
         {
-            // (LevelSelectForm bleibt modal offen im Hintergrund)
-            Form? levelForm = null;
-            if (level == 1)
-                levelForm = new Level1Form();
-            else if (level == 2)
-                levelForm = new Level2Form();
+            Form? levelForm = level switch
+            {
+                1 => new Level1Form(),
+                2 => new Level2Form(),
+                // Add more levels as needed
+                _ => null
+            };
 
             if (levelForm != null)
-                levelForm.ShowDialog(this); // Modal zur Levelauswahl
-
-            // Nach Levelende (Level1Form wurde geschlossen) bist du wieder in LevelSelectForm!
+                levelForm.ShowDialog(this);
         }
     }
 }

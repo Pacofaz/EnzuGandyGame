@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 
 namespace EnzuGame.Klassen
 {
@@ -11,12 +8,19 @@ namespace EnzuGame.Klassen
         public int LevelNumber { get; }
         public Rectangle Bounds { get; set; }
         public Func<bool> IsUnlocked { get; }
-        public Image NormalImage { get; }
-        public Image HoverImage { get; }
-        public Image ClickedImage { get; }
-        public Image LockedImage { get; }
+        public Image? NormalImage { get; }
+        public Image? HoverImage { get; }
+        public Image? ClickedImage { get; }
+        public Image? LockedImage { get; }
 
-        public LevelButton(int number, Rectangle bounds, Func<bool> unlocked, Image normal, Image hover, Image clicked, Image locked)
+        public LevelButton(
+            int number,
+            Rectangle bounds,
+            Func<bool> unlocked,
+            Image? normal,
+            Image? hover,
+            Image? clicked,
+            Image? locked)
         {
             LevelNumber = number;
             Bounds = bounds;
@@ -29,9 +33,10 @@ namespace EnzuGame.Klassen
 
         public void Draw(Graphics g, bool hovered, bool pressed)
         {
+            Image? toDraw = null;
+
             if (IsUnlocked())
             {
-                Image toDraw;
                 if (pressed && ClickedImage != null)
                     toDraw = ClickedImage;
                 else if (hovered && HoverImage != null)
@@ -50,10 +55,10 @@ namespace EnzuGame.Klassen
                     g.DrawImage(NormalImage, Bounds);
                 else
                 {
-                    using (var pen = new Pen(Color.Red, 2))
-                        g.DrawRectangle(pen, Bounds);
-                    using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-                        g.DrawString("?", SystemFonts.DefaultFont, Brushes.Red, Bounds, sf);
+                    using var pen = new Pen(Color.Red, 2);
+                    g.DrawRectangle(pen, Bounds);
+                    using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                    g.DrawString("?", SystemFonts.DefaultFont, Brushes.Red, Bounds, sf);
                 }
             }
         }

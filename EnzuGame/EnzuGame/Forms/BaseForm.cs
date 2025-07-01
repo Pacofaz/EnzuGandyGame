@@ -1,57 +1,60 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using EnzuGame.Klassen;
 
 namespace EnzuGame.Forms
 {
+    /// <summary>
+    /// Basis-Formular für alle Spiel-Forms.
+    /// Kümmert sich um Registrierung für globale Effekte (z.B. Helligkeit, Musiksteuerung).
+    /// </summary>
     public partial class BaseForm : Form
-
     {
+        /// <summary>
+        /// Erstellt das Basis-Formular und registriert Standard-Events.
+        /// </summary>
         public BaseForm()
         {
-            // Event-Registrierung bei Erstellung
+            // Bei Laden und Schließen Standard-Aktionen ausführen
             this.Load += BaseForm_Load;
             this.FormClosed += BaseForm_FormClosed;
         }
 
-        private void BaseForm_Load(object sender, EventArgs e)
+        /// <summary>
+        /// Wird beim Laden der Form ausgelöst.
+        /// Registriert das Form bei GameSettings für Helligkeitseffekte,
+        /// sofern es **keine** SettingsForm ist.
+        /// </summary>
+        private void BaseForm_Load(object? sender, EventArgs e)
         {
-            // Bei Form-Laden für Helligkeitseffekte registrieren
-            // Nur registrieren, wenn es sich nicht um eine SettingsForm handelt
+            // Keine doppelten Helligkeitseffekte auf SettingsForm
             if (!(this is SettingsForm))
-            {
                 GameSettings.RegisterForm(this);
-            }
 
-            // Stellen Sie sicher, dass die Musik weiterhin spielt
+            // Musik ggf. sicherstellen
             EnsureMusicIsPlaying();
         }
 
-        private void BaseForm_FormClosed(object sender, FormClosedEventArgs e)
+        /// <summary>
+        /// Wird beim Schließen der Form ausgelöst.
+        /// Meldet das Form wieder bei GameSettings ab.
+        /// </summary>
+        private void BaseForm_FormClosed(object? sender, FormClosedEventArgs e)
         {
-            // Form bei GameSettings abmelden
             GameSettings.UnregisterForm(this);
         }
 
         /// <summary>
-        /// Stellt sicher, dass die Hintergrundmusik spielt
+        /// Stellt sicher, dass die Hintergrundmusik läuft.
+        /// Wenn keine Musik läuft, startet sie den Standard-Soundtrack.
         /// </summary>
         protected void EnsureMusicIsPlaying()
         {
             try
             {
-                // Prüfen ob Musik bereits spielt
                 if (!SoundManager.IsMusicPlaying())
                 {
-                    // Standard-Soundtrack abspielen
                     SoundManager.PlayBackgroundMusic("Resources/soundtrack.wav");
                     SoundManager.SetMusicVolume(GameSettings.MusicVolume / 100.0f);
                 }
