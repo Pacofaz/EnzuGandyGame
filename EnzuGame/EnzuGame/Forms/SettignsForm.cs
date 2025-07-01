@@ -1,13 +1,7 @@
 ﻿using EnzuGame.Klassen;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EnzuGame.Forms
@@ -28,6 +22,12 @@ namespace EnzuGame.Forms
         private const int ToggleBtnY = 50;
         private const int ToggleBtnWidth = 40;
         private const int ToggleBtnHeight = 30;
+        private const int ToggleGroupX = 140;
+        private const int ToggleGroupY = ToggleBtnY;
+        private const int ToggleGroupWidth = 200;
+        private const int ToggleGroupHeight = 30;
+        private const int ToggleTextX = 240;
+        private const int ToggleTextY = 65;
         private const int SaveCancelY = 280;
         private static readonly Size ActionBtnSize = new Size(120, 40);
 
@@ -43,10 +43,10 @@ namespace EnzuGame.Forms
         // --- Einstellungen als Model ---
         private class SettingsSnapshot
         {
-            public bool Fullscreen;
-            public int Brightness;
-            public int MusicVolume;
-            public int SoundVolume;
+            public bool Fullscreen { get; set; }
+            public int Brightness { get; set; }
+            public int MusicVolume { get; set; }
+            public int SoundVolume { get; set; }
 
             public SettingsSnapshot Clone()
             {
@@ -57,26 +57,24 @@ namespace EnzuGame.Forms
         private SettingsSnapshot tempSettings;
         private SettingsSnapshot originalSettings;
 
-        // --- Enums statt Indexe ---
         private enum SliderType { Brightness = 0, Music = 1, Sound = 2 }
         private const int SliderCount = 3;
 
         // --- UI-Elemente ---
         private readonly Rectangle[] sliderRects = new Rectangle[SliderCount];
         private readonly Point[] sliderKnobs = new Point[SliderCount];
-        private Rectangle[] toggleBtnRects = new Rectangle[2];
+        private readonly Rectangle[] toggleBtnRects = new Rectangle[2];
         private Rectangle saveRect, cancelRect;
 
         private int? draggedSlider = null;
 
-        private Image backgroundImage;
+        private Image? backgroundImage = null;
 
         // --- Konstruktor ---
         public SettingsForm()
         {
             InitializeComponent();
 
-            // Model-Initialisierung
             tempSettings = new SettingsSnapshot
             {
                 Fullscreen = GameSettings.Fullscreen,
@@ -86,7 +84,6 @@ namespace EnzuGame.Forms
             };
             originalSettings = tempSettings.Clone();
 
-            // Form-Setup
             this.DoubleBuffered = true;
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterParent;
@@ -94,23 +91,18 @@ namespace EnzuGame.Forms
             this.BackColor = BackgroundColor;
             this.KeyPreview = true;
 
-            // Ressourcen
             backgroundImage = CreateGradientBackground(this.Width, this.Height);
 
-            // UI
             InitUI();
             RegisterEvents();
 
-            // Registrierung bei globalen Settings (z.B. für Updates)
             GameSettings.RegisterForm(this);
 
-            // Fokus auf Form für direkte Key-Eingaben
             this.Shown += (s, e) => this.Focus();
         }
 
         private void InitUI()
         {
-            // Slider
             for (int i = 0; i < SliderCount; i++)
             {
                 sliderRects[i] = new Rectangle(
@@ -122,11 +114,9 @@ namespace EnzuGame.Forms
                 sliderKnobs[i] = SliderKnobPos(sliderRects[i], GetSliderValue((SliderType)i));
             }
 
-            // Toggle-Buttons für Vollbild
-            toggleBtnRects[0] = new Rectangle(SliderStartX, ToggleBtnY, ToggleBtnWidth, ToggleBtnHeight);           // Links "<"
-            toggleBtnRects[1] = new Rectangle(SliderStartX + SliderWidth - ToggleBtnWidth, ToggleBtnY, ToggleBtnWidth, ToggleBtnHeight); // Rechts ">"
+            toggleBtnRects[0] = new Rectangle(SliderStartX, ToggleBtnY, ToggleBtnWidth, ToggleBtnHeight);
+            toggleBtnRects[1] = new Rectangle(SliderStartX + SliderWidth - ToggleBtnWidth, ToggleBtnY, ToggleBtnWidth, ToggleBtnHeight);
 
-            // Save/Cancel
             saveRect = new Rectangle(120, SaveCancelY, ActionBtnSize.Width, ActionBtnSize.Height);
             cancelRect = new Rectangle(260, SaveCancelY, ActionBtnSize.Width, ActionBtnSize.Height);
         }
@@ -140,16 +130,15 @@ namespace EnzuGame.Forms
             this.KeyDown += SettingsForm_KeyDown;
         }
 
-        // --- Getter für Modelwerte je Slider ---
         private int GetSliderValue(SliderType type)
         {
-            switch (type)
+            return type switch
             {
-                case SliderType.Brightness: return tempSettings.Brightness;
-                case SliderType.Music: return tempSettings.MusicVolume;
-                case SliderType.Sound: return tempSettings.SoundVolume;
-                default: return 0;
-            }
+                SliderType.Brightness => tempSettings.Brightness,
+                SliderType.Music => tempSettings.MusicVolume,
+                SliderType.Sound => tempSettings.SoundVolume,
+                _ => 0,
+            };
         }
 
         private void SetSliderValue(SliderType type, int value)
@@ -169,47 +158,40 @@ namespace EnzuGame.Forms
             }
         }
 
-        // --- Zeichenlogik ---
-        private void SettingsForm_Paint(object sender, PaintEventArgs e)
+        private void SettingsForm_Paint(object? sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            var g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
             if (backgroundImage != null)
                 g.DrawImage(backgroundImage, 0, 0);
 
-            using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center })
+            using (var sf = new StringFormat { Alignment = StringAlignment.Center })
                 g.DrawString("EINSTELLUNGEN", TitleFont, new SolidBrush(PrimaryColor), this.Width / 2, 15, sf);
 
-            // Toggle-UI für Vollbild
-            DrawRoundedRectangle(g, new Rectangle(140, 50, 200, 30), CornerRadius, DarkColor);
-            DrawGlowingText(g, tempSettings.Fullscreen ? "Vollbild" : "Fenster", RegularFont, PrimaryColor, 240, 54, true);
+            DrawRoundedRectangle(g, new Rectangle(ToggleGroupX, ToggleGroupY, ToggleGroupWidth, ToggleGroupHeight), CornerRadius, DarkColor);
+            DrawGlowingText(g, tempSettings.Fullscreen ? "Vollbild" : "Fenster", RegularFont, PrimaryColor, ToggleTextX, ToggleTextY, true);
             DrawButton(g, toggleBtnRects[0], "<");
             DrawButton(g, toggleBtnRects[1], ">");
 
-            // Slider
             DrawSlider(g, "HELLIGKEIT", tempSettings.Brightness, sliderRects[(int)SliderType.Brightness], sliderKnobs[(int)SliderType.Brightness]);
             DrawSlider(g, "MUSIK LAUTSTÄRKE", tempSettings.MusicVolume, sliderRects[(int)SliderType.Music], sliderKnobs[(int)SliderType.Music]);
             DrawSlider(g, "SOUND LAUTSTÄRKE", tempSettings.SoundVolume, sliderRects[(int)SliderType.Sound], sliderKnobs[(int)SliderType.Sound]);
 
-            // Action-Buttons
             DrawActionButton(g, saveRect, "SPEICHERN", AccentColor);
             DrawActionButton(g, cancelRect, "ABBRECHEN", DarkColor);
 
-            // Overlay (Helligkeit)
             ApplyBrightnessOverlay(g);
         }
 
-        // === Zeichenmethoden (Platzhalter: deinen Code hier einsetzen oder wie gehabt lassen) ===
         private void DrawButton(Graphics g, Rectangle rect, string text)
         {
             DrawRoundedRectangle(g, rect, CornerRadius, DarkColor);
-            using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-            using (Brush textBrush = new SolidBrush(PrimaryColor))
+            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+            using (var textBrush = new SolidBrush(PrimaryColor))
             {
-                g.DrawString(text, RegularFont, textBrush,
-                    new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
+                g.DrawString(text, RegularFont, textBrush, new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
             }
         }
 
@@ -259,11 +241,10 @@ namespace EnzuGame.Forms
                 }
             }
 
-            using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Far })
-            using (Brush textBrush = new SolidBrush(PrimaryColor))
+            using (var sf = new StringFormat { Alignment = StringAlignment.Far })
+            using (var textBrush = new SolidBrush(PrimaryColor))
             {
-                g.DrawString(value + "%", RegularFont, textBrush,
-                    sliderRect.Right + 40, sliderRect.Y, sf);
+                g.DrawString(value + "%", RegularFont, textBrush, sliderRect.Right + 40, sliderRect.Y, sf);
             }
         }
 
@@ -282,28 +263,27 @@ namespace EnzuGame.Forms
                     g.DrawPath(p, path);
                 }
             }
-            using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
-            using (Brush textBrush = new SolidBrush(Color.White))
+            using (var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+            using (var textBrush = new SolidBrush(Color.White))
             {
-                g.DrawString(text, RegularFont, textBrush,
-                    new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
+                g.DrawString(text, RegularFont, textBrush, new RectangleF(rect.X, rect.Y, rect.Width, rect.Height), sf);
             }
         }
 
         private void DrawGlowingText(Graphics g, string text, Font font, Color color, float x, float y, bool centered)
         {
-            using (StringFormat sf = new StringFormat())
+            using (var sf = new StringFormat())
             {
                 if (centered)
                 {
                     sf.Alignment = StringAlignment.Center;
                     sf.LineAlignment = StringAlignment.Center;
                 }
-                using (Brush shadowBrush = new SolidBrush(Color.FromArgb(100, Color.Black)))
+                using (var shadowBrush = new SolidBrush(Color.FromArgb(100, Color.Black)))
                 {
                     g.DrawString(text, font, shadowBrush, x + 1, y + 1, sf);
                 }
-                using (Brush textBrush = new SolidBrush(color))
+                using (var textBrush = new SolidBrush(color))
                 {
                     g.DrawString(text, font, textBrush, x, y, sf);
                 }
@@ -327,27 +307,23 @@ namespace EnzuGame.Forms
             int diameter = radius * 2;
             Rectangle arcRect = new Rectangle(rect.X, rect.Y, diameter, diameter);
 
-            // Obere linke Ecke
             if (diameter > 0)
                 path.AddArc(arcRect, 180, 90);
             else
                 path.AddLine(rect.X, rect.Y, rect.X, rect.Y);
 
-            // Obere rechte Ecke
             arcRect.X = rect.Right - diameter;
             if (diameter > 0)
                 path.AddArc(arcRect, 270, 90);
             else
                 path.AddLine(rect.Right, rect.Y, rect.Right, rect.Y);
 
-            // Untere rechte Ecke
             arcRect.Y = rect.Bottom - diameter;
             if (diameter > 0)
                 path.AddArc(arcRect, 0, 90);
             else
                 path.AddLine(rect.Right, rect.Bottom, rect.Right, rect.Bottom);
 
-            // Untere linke Ecke
             arcRect.X = rect.X;
             if (diameter > 0)
                 path.AddArc(arcRect, 90, 90);
@@ -407,8 +383,7 @@ namespace EnzuGame.Forms
             return bmp;
         }
 
-        // --- Input-Handling ---
-        private void SettingsForm_MouseDown(object sender, MouseEventArgs e)
+        private void SettingsForm_MouseDown(object? sender, MouseEventArgs e)
         {
             for (int i = 0; i < SliderCount; i++)
             {
@@ -433,7 +408,7 @@ namespace EnzuGame.Forms
             }
         }
 
-        private void SettingsForm_MouseMove(object sender, MouseEventArgs e)
+        private void SettingsForm_MouseMove(object? sender, MouseEventArgs e)
         {
             if (draggedSlider.HasValue)
                 UpdateSliderValue((SliderType)draggedSlider.Value, e.X);
@@ -462,12 +437,11 @@ namespace EnzuGame.Forms
             this.Cursor = overInteractive ? Cursors.Hand : Cursors.Default;
         }
 
-        private void SettingsForm_MouseUp(object sender, MouseEventArgs e)
+        private void SettingsForm_MouseUp(object? sender, MouseEventArgs e)
         {
             if (draggedSlider.HasValue)
                 draggedSlider = null;
 
-            // Toggle Button
             if (toggleBtnRects[0].Contains(e.Location) || toggleBtnRects[1].Contains(e.Location))
             {
                 tempSettings.Fullscreen = !tempSettings.Fullscreen;
@@ -483,7 +457,7 @@ namespace EnzuGame.Forms
             }
         }
 
-        private void SettingsForm_KeyDown(object sender, KeyEventArgs e)
+        private void SettingsForm_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
                 CancelAndRestore();
@@ -504,7 +478,6 @@ namespace EnzuGame.Forms
             Invalidate();
         }
 
-        // --- Settings speichern/wiederherstellen ---
         private void SaveSettings()
         {
             GameSettings.Fullscreen = tempSettings.Fullscreen;
@@ -517,12 +490,10 @@ namespace EnzuGame.Forms
 
         private void CancelAndRestore()
         {
-            // Nur Sound-Einstellung zurück, alles andere wird ja nicht gespeichert
             SoundManager.SetMusicVolume(originalSettings.MusicVolume / 100.0f);
             this.Close();
         }
 
-        // --- Ressourcen säubern ---
         protected override void Dispose(bool disposing)
         {
             if (disposing)

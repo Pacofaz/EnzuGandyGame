@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SerializableSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Fullscreen>true</Fullscreen>
-  <Brightness>80</Brightness>
+  <Brightness>70</Brightness>
   <MusicVolume>50</MusicVolume>
   <SoundVolume>50</SoundVolume>
   <UnlockedLevel>2</UnlockedLevel>
