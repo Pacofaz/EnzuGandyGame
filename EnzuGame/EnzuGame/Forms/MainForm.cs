@@ -1,13 +1,6 @@
 ﻿#nullable enable
 
 using EnzuGame.Klassen;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 
 namespace EnzuGame.Forms
 {
@@ -43,7 +36,6 @@ namespace EnzuGame.Forms
 
         // --- Verweise auf geöffnete Sub-Forms ---
         private Form? activeSettingsForm;
-        private Form? activeLevelSelectForm;
 
         /// <summary>
         /// Initialisiert das Hauptmenü und lädt Grafiken und Buttons.

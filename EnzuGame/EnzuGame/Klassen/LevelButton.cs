@@ -3,41 +3,24 @@ using System.Drawing;
 
 namespace EnzuGame.Klassen
 {
-    /// <summary>
-    /// Stellt einen auswählbaren Level-Button im Level-Auswahlmenü dar.
-    /// Zeichnet sich je nach Status (normal, hovered, clicked, locked) unterschiedlich.
-    /// </summary>
     public class LevelButton
     {
-        /// <summary>Die Levelnummer, die der Button repräsentiert.</summary>
         public int LevelNumber { get; }
-
-        /// <summary>Bildschirmbereich, in dem der Button angezeigt wird.</summary>
         public Rectangle Bounds { get; set; }
-
-        /// <summary>Delegate, das prüft, ob das Level freigeschaltet ist.</summary>
         public Func<bool> IsUnlocked { get; }
+        public Image? NormalImage { get; }
+        public Image? HoverImage { get; }
+        public Image? ClickedImage { get; }
+        public Image? LockedImage { get; }
 
-        /// <summary>Bild für normalen Zustand.</summary>
-        public Image NormalImage { get; }
-        /// <summary>Bild bei Mouse-Over.</summary>
-        public Image HoverImage { get; }
-        /// <summary>Bild beim Klicken.</summary>
-        public Image ClickedImage { get; }
-        /// <summary>Bild für gesperrtes Level.</summary>
-        public Image LockedImage { get; }
-
-        /// <summary>
-        /// Konstruktor für einen LevelButton mit allen Darstellungen.
-        /// </summary>
         public LevelButton(
             int number,
             Rectangle bounds,
             Func<bool> unlocked,
-            Image normal,
-            Image hover,
-            Image clicked,
-            Image locked)
+            Image? normal,
+            Image? hover,
+            Image? clicked,
+            Image? locked)
         {
             LevelNumber = number;
             Bounds = bounds;
@@ -48,34 +31,28 @@ namespace EnzuGame.Klassen
             LockedImage = locked;
         }
 
-        /// <summary>
-        /// Zeichnet den Button im passenden Style.
-        /// </summary>
         public void Draw(Graphics g, bool hovered, bool pressed)
         {
+            Image? toDraw = null;
+
             if (IsUnlocked())
             {
-                // Freigeschaltet: Je nach Interaktion andere Grafik
-                Image? toDraw = NormalImage;
                 if (pressed && ClickedImage != null)
                     toDraw = ClickedImage;
                 else if (hovered && HoverImage != null)
                     toDraw = HoverImage;
+                else
+                    toDraw = NormalImage;
 
                 if (toDraw != null)
                     g.DrawImage(toDraw, Bounds);
             }
-            else
+            else // locked
             {
-                // Gesperrt: locked-Bild, ansonsten Fallback
                 if (LockedImage != null)
-                {
                     g.DrawImage(LockedImage, Bounds);
-                }
                 else if (NormalImage != null)
-                {
                     g.DrawImage(NormalImage, Bounds);
-                }
                 else
                 {
                     using var pen = new Pen(Color.Red, 2);

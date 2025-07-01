@@ -8,29 +8,37 @@ using EnzuGame.Klassen;
 
 namespace EnzuGame.Forms
 {
+    /// <summary>
+    /// Stellt das Spielfeld für Level 1 bereit (Match-3-Mechanik).
+    /// Enthält die komplette Spiellogik, Animationen, Eingabe und Anzeige.
+    /// </summary>
     public partial class Level1Form : Form
     {
+        // --- Ressourcen & Spielfeld ---
         private Image backgroundImg;
         private Image gridImg;
         private const int GridSize = 9;
-        private int[,] grid;
-        private Random rnd = new Random();
+        private int[,] grid; // Spielfeld (9x9 Candies)
+        private readonly Random rnd = new Random();
 
-        // Animation & Falling
-        private List<FallingCandy> animatedCandies = new List<FallingCandy>();
+        // --- Animation & Fallende Candies ---
+        private readonly List<FallingCandy> animatedCandies = new();
         private bool resolving = false;
-        private System.Windows.Forms.Timer animationTimer;
+        private readonly System.Windows.Forms.Timer animationTimer;
 
-        // Mouse Interaction
+        // --- Mausinteraktion ---
         private Point? selectedCell = null;
         private Point? hoverCell = null;
 
-        // UI/State
-        private string levelObjective = "Ziel: Erreiche 200 Punkte!";
+        // --- Spielstatus & UI ---
+        private readonly string levelObjective = "Ziel: Erreiche 200 Punkte!";
         private int score = 0;
         private bool levelCompleted = false;
-        private Button nextButton;
+        private readonly Button nextButton;
 
+        /// <summary>
+        /// Initialisiert das Level-Formular, lädt Grafiken und startet das Level.
+        /// </summary>
         public Level1Form()
         {
             InitializeComponent();
@@ -38,13 +46,16 @@ namespace EnzuGame.Forms
             Text = "Level 1";
             this.ClientSize = new Size(500, 320);
 
+            // --- Bilder laden ---
             string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "levels");
             backgroundImg = Image.FromFile(Path.Combine(basePath, "lvl1_background.png"));
             gridImg = Image.FromFile(Path.Combine(basePath, "Spielfeld2.png"));
 
+            // --- Grid initialisieren und mit Zufallswerten füllen ---
             grid = new int[GridSize, GridSize];
             FillRandomGrid();
 
+            // --- Event-Handler registrieren ---
             this.Paint += Level1Form_Paint;
             this.Resize += (s, e) => this.Invalidate();
             this.MouseDown += Level1Form_MouseDown;
@@ -52,24 +63,32 @@ namespace EnzuGame.Forms
             this.MouseMove += Level1Form_MouseMove;
             this.MouseLeave += (s, e) => { hoverCell = null; Invalidate(); };
 
-            animationTimer = new System.Windows.Forms.Timer();
-            animationTimer.Interval = 16; // ~60 FPS for smooth animation
+            // --- Animationstimer für fallende Candies ---
+            animationTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 16 // ~60 FPS
+            };
             animationTimer.Tick += AnimationTimer_Tick;
 
-            nextButton = new Button();
-            nextButton.Text = "Weiter";
-            nextButton.Visible = false;
-            nextButton.Location = new Point(20, 250);
-            nextButton.Size = new Size(120, 30);
+            // --- "Weiter"-Button vorbereiten (für Level-Ende) ---
+            nextButton = new Button
+            {
+                Text = "Weiter",
+                Visible = false,
+                Location = new Point(20, 250),
+                Size = new Size(120, 30)
+            };
             nextButton.Click += (s, e) =>
             {
                 GameSettings.SaveSettings();
-                this.Close(); // **WICHTIG:** Nur das Level schließen!
+                this.Close(); // Nur das Level schließen!
             };
             Controls.Add(nextButton);
         }
 
-
+        /// <summary>
+        /// Füllt das Spielfeld mit zufälligen Candies (Typen 1-4).
+        /// </summary>
         private void FillRandomGrid()
         {
             for (int row = 0; row < GridSize; row++)
@@ -77,17 +96,18 @@ namespace EnzuGame.Forms
                     grid[row, col] = rnd.Next(1, 5);
         }
 
+        /// <summary>
+        /// Zeichnet das gesamte Level (Spielfeld, Candies, UI, Animationen).
+        /// </summary>
         private void Level1Form_Paint(object? sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
 
-            // Hintergrund
-            if (backgroundImg != null)
-                g.DrawImage(backgroundImg, 0, 0, ClientSize.Width, ClientSize.Height);
+            // --- Hintergrund ---
+            g.DrawImage(backgroundImg, 0, 0, ClientSize.Width, ClientSize.Height);
 
-            // Text-Box
-            int textBoxWidth = 160;
-            int textPadding = 10;
+            // --- Linke Textbox (Ziel, Punkte, Status) ---
+            int textBoxWidth = 160, textPadding = 10;
             using (var bgBrush = new SolidBrush(Color.FromArgb(180, 20, 20, 20)))
                 g.FillRectangle(bgBrush, 0, 0, textBoxWidth, ClientSize.Height);
 
@@ -101,7 +121,7 @@ namespace EnzuGame.Forms
                 g.DrawString(text, font, textBrush, rect);
             }
 
-            // Grid-Layout
+            // --- Grid-Bereich berechnen ---
             int gridMargin = 4;
             int gridImgSize = Math.Min(ClientSize.Width - textBoxWidth, ClientSize.Height);
             int gridPixelSize = gridImgSize - 2 * gridMargin;
@@ -110,23 +130,22 @@ namespace EnzuGame.Forms
             int offsetY = (ClientSize.Height - gridImgSize) / 2 + gridMargin;
             float candySize = cellSize * 0.7f;
 
-            // Grid-Bild
-            if (gridImg != null)
-                g.DrawImage(gridImg, offsetX - gridMargin, offsetY - gridMargin, gridImgSize, gridImgSize);
+            // --- Grid-Grafik ---
+            g.DrawImage(gridImg, offsetX - gridMargin, offsetY - gridMargin, gridImgSize, gridImgSize);
 
-            // Erst feststehende Candies zeichnen
+            // --- Alle festen Candies zeichnen ---
             for (int row = 0; row < GridSize; row++)
                 for (int col = 0; col < GridSize; col++)
                 {
                     if (grid[row, col] == 0) continue;
                     if (animatedCandies.Any(f => f.ToRow == row && f.ToCol == col))
-                        continue; // Dort landet gleich ein animiertes Candy, also hier nicht zeichnen
+                        continue; // Ziel wird gleich von Animation gefüllt
                     float cx = offsetX + (col + 0.5f) * cellSize;
                     float cy = offsetY + (row + 0.5f) * cellSize;
                     DrawCandy(g, grid[row, col], cx, cy, candySize);
                 }
 
-            // Dann die animierten Candies zeichnen (fallen/schweben)
+            // --- Animierte Candies drübermalen ---
             foreach (var candy in animatedCandies)
             {
                 float cx = offsetX + (candy.ToCol + 0.5f) * cellSize;
@@ -134,7 +153,7 @@ namespace EnzuGame.Forms
                 DrawCandy(g, candy.Type, cx, cy, candySize);
             }
 
-            // Hover-Zelle
+            // --- Hover-Highlight (bei Maus drüber) ---
             if (hoverCell.HasValue)
             {
                 int col = hoverCell.Value.X, row = hoverCell.Value.Y;
@@ -144,6 +163,9 @@ namespace EnzuGame.Forms
             }
         }
 
+        /// <summary>
+        /// Zeichnet eine Candy-Kugel (Ellipse).
+        /// </summary>
         private void DrawCandy(Graphics g, int typ, float cx, float cy, float size)
         {
             float px = cx - size / 2, py = cy - size / 2;
@@ -156,6 +178,9 @@ namespace EnzuGame.Forms
                 g.DrawEllipse(pen, px, py, size, size);
         }
 
+        /// <summary>
+        /// Hebt eine Zelle hervor (z.B. Hover mit Maus).
+        /// </summary>
         private void DrawHover(Graphics g, float cx, float cy, float size)
         {
             float px = cx - size / 2, py = cy - size / 2;
@@ -163,6 +188,9 @@ namespace EnzuGame.Forms
                 g.DrawEllipse(pen, px + 2, py + 2, size - 4, size - 4);
         }
 
+        /// <summary>
+        /// Liefert die passende Farbe für einen Candy-Typ.
+        /// </summary>
         private Color CandyColor(int typ) => typ switch
         {
             1 => Color.DeepSkyBlue,
@@ -172,7 +200,7 @@ namespace EnzuGame.Forms
             _ => Color.Gray
         };
 
-        // --- Mouse Interaktion ---
+        // ----------- MOUSE-EVENTS UND LOGIK -----------
 
         private void Level1Form_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -189,6 +217,7 @@ namespace EnzuGame.Forms
             var from = selectedCell.Value;
             var to = new Point(col, row);
 
+            // Zellen sind benachbart?
             if (Math.Abs(from.X - to.X) + Math.Abs(from.Y - to.Y) == 1)
             {
                 Swap(from.Y, from.X, to.Y, to.X);
@@ -198,7 +227,7 @@ namespace EnzuGame.Forms
                 {
                     foreach (var pt in matches)
                         grid[pt.Y, pt.X] = 0;
-                    score += matches.Count * 5; // weniger Punkte pro Match
+                    score += matches.Count * 5;
                     AnimateCandiesFall();
                     resolving = true;
                     animationTimer.Start();
@@ -221,6 +250,9 @@ namespace EnzuGame.Forms
             Invalidate();
         }
 
+        /// <summary>
+        /// Gibt Zeile/Spalte anhand der Mausposition im Spielfeld zurück.
+        /// </summary>
         private bool GetCellFromPoint(Point p, out int row, out int col)
         {
             int gridMargin = 4;
@@ -236,8 +268,11 @@ namespace EnzuGame.Forms
             return col >= 0 && col < GridSize && row >= 0 && row < GridSize;
         }
 
-        // --- ANIMATIONSLOGIK ---
+        // ----------- ANIMATION & FALL-LOGIK -----------
 
+        /// <summary>
+        /// Animiert alle fallenden Candies und führt nach Abschluss das nächste "Resolve" durch.
+        /// </summary>
         private void AnimationTimer_Tick(object? sender, EventArgs e)
         {
             bool isAnimating = false;
@@ -253,7 +288,7 @@ namespace EnzuGame.Forms
                 }
             }
 
-            // Animation fertig? Dann ins Grid übernehmen
+            // Animation beendet: Grid updaten, nächste Runde prüfen
             if (!isAnimating && animatedCandies.Count > 0)
             {
                 foreach (var candy in animatedCandies)
@@ -261,12 +296,15 @@ namespace EnzuGame.Forms
                 animatedCandies.Clear();
                 resolving = false;
                 animationTimer.Stop();
-                StartResolve(); // Nächster Match-/Fall-Vorgang starten
+                StartResolve();
             }
 
             Invalidate();
         }
 
+        /// <summary>
+        /// Prüft nach einer Animation, ob es Matches oder ein Level-Ende gibt.
+        /// </summary>
         private void StartResolve()
         {
             var toClear = FindMatches();
@@ -274,8 +312,8 @@ namespace EnzuGame.Forms
             if (score >= 200 && !levelCompleted)
             {
                 levelCompleted = true;
-                GameSettings.Level2Unlocked = true; // Level 2 explizit freischalten
-                GameSettings.UnlockedLevel = Math.Max(GameSettings.UnlockedLevel, 2); // falls du das parallel brauchst
+                GameSettings.Level2Unlocked = true;
+                GameSettings.UnlockedLevel = Math.Max(GameSettings.UnlockedLevel, 2);
                 GameSettings.SaveSettings();
                 nextButton.Visible = true;
             }
@@ -283,10 +321,11 @@ namespace EnzuGame.Forms
             Invalidate();
         }
 
-
+        /// <summary>
+        /// Animiert alle fallenden Candies nach einem Match/Clear.
+        /// </summary>
         private void AnimateCandiesFall()
         {
-            // Pro Spalte: Alle Lücken von unten nach oben suchen und Candies animieren
             for (int col = 0; col < GridSize; col++)
             {
                 int emptyCount = 0;
@@ -306,19 +345,19 @@ namespace EnzuGame.Forms
                             FromCol = col,
                             ToCol = col,
                             Y = row,
-                            Speed = 0.25f + (emptyCount * 0.13f) // höhere Lücke = schneller
+                            Speed = 0.25f + (emptyCount * 0.13f)
                         });
-                        grid[row, col] = 0; // Candy "schwebt" jetzt
+                        grid[row, col] = 0; // Candy "schwebt"
                     }
                 }
-                // Neue Candies oben einfügen (von oben reinfallen)
+                // Neue Candies oben einfügen
                 for (int i = 0; i < emptyCount; i++)
                 {
                     int candyType = rnd.Next(1, 5);
                     animatedCandies.Add(new FallingCandy
                     {
                         Type = candyType,
-                        FromRow = -1 - i, // Von weiter oben starten
+                        FromRow = -1 - i,
                         ToRow = i,
                         FromCol = col,
                         ToCol = col,
@@ -329,8 +368,11 @@ namespace EnzuGame.Forms
             }
         }
 
-        // --- GAME LOGIK ---
+        // ----------- GAME-LOGIK -----------
 
+        /// <summary>
+        /// Findet alle Dreier- oder Mehrfachreihen (horizontal & vertikal).
+        /// </summary>
         private List<Point> FindMatches()
         {
             var matches = new List<Point>();
@@ -365,6 +407,9 @@ namespace EnzuGame.Forms
             return matches.Distinct().ToList();
         }
 
+        /// <summary>
+        /// Tauscht zwei Candies im Grid.
+        /// </summary>
         private void Swap(int r1, int c1, int r2, int c2)
         {
             int tmp = grid[r1, c1];
@@ -372,14 +417,16 @@ namespace EnzuGame.Forms
             grid[r2, c2] = tmp;
         }
 
-        // --- Hilfsklasse für Animation ---
+        /// <summary>
+        /// Hilfsklasse für animierte Candies (Falling).
+        /// </summary>
         private class FallingCandy
         {
             public int Type;
             public int FromRow, FromCol;
             public int ToRow, ToCol;
-            public float Y; // aktuelle Position in Zellen (float, damit smooth)
-            public float Speed; // pro Tick
+            public float Y; // aktuelle Position (für smooth animation)
+            public float Speed; // Fallgeschwindigkeit
         }
     }
 }

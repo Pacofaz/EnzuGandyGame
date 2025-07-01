@@ -1,30 +1,34 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 namespace EnzuGame.Forms
 {
+    /// <summary>
+    /// Intro-Formular, das ein Video im Vollbild abspielt und bei Ende automatisch schließt.
+    /// Optional wird ein Overlay angezeigt.
+    /// </summary>
     public partial class FormIntro : Form
     {
-        private System.Windows.Forms.Timer introTimer;
-        private SkipOverlayForm overlayForm;
-        // Text für Overlay OHNE Leertaste
-        private readonly string skipText = ""; // Kein Text mehr nötig
+        private readonly System.Windows.Forms.Timer introTimer = new System.Windows.Forms.Timer();
+        private SkipOverlayForm? overlayForm; // Overlay ist optional, daher nullable
+        private readonly string skipText = ""; // Kein Text erforderlich
 
         public FormIntro()
         {
             InitializeComponent();
 
-            // ----------- Fullscreen auf aktuellem Screen (z.B. da, wo die Maus ist) -----------
-            var screen = Screen.FromPoint(Cursor.Position); // <-- Hier wechselbar!
+            // Setze die Form auf den Bildschirm, auf dem die Maus ist
+            var screen = Screen.FromPoint(Cursor.Position);
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.Manual;
             this.Location = screen.Bounds.Location;
             this.Size = screen.Bounds.Size;
             this.DoubleBuffered = true;
             this.KeyPreview = true;
-            // Kein KeyDown-Event mehr
 
             // Musik fürs Intro
             SoundManager.SetMusicVolume(0.2f);
@@ -50,7 +54,7 @@ namespace EnzuGame.Forms
             axWindowsMediaPlayer1.Dock = DockStyle.Fill;
             axWindowsMediaPlayer1.Ctlcontrols.play();
 
-            introTimer = new System.Windows.Forms.Timer();
+            // Intro wird nach 6 Sekunden automatisch geschlossen
             introTimer.Interval = 6000;
             introTimer.Tick += (s, e) =>
             {
@@ -67,26 +71,27 @@ namespace EnzuGame.Forms
             };
             this.FormClosed += (s, e) =>
             {
-                if (overlayForm != null && !overlayForm.IsDisposed)
-                    overlayForm.Close();
+                overlayForm?.Close();
             };
             this.Move += (s, e) => SyncOverlayPosition();
             this.Resize += (s, e) => SyncOverlayPosition();
         }
 
-        // --- KeyDown-Methode komplett entfernt ---
-
+        /// <summary>
+        /// Beendet das Intro und stellt die Lautstärke wieder her.
+        /// </summary>
         private void CloseIntro()
         {
             try { axWindowsMediaPlayer1.Ctlcontrols.stop(); } catch { }
             SoundManager.SetMusicVolume(1.0f);
 
-            if (overlayForm != null && !overlayForm.IsDisposed)
-                overlayForm.Close();
-            this.Close();  // NICHT MainForm öffnen!
+            overlayForm?.Close();
+            this.Close();
         }
 
-
+        /// <summary>
+        /// Hält das Overlay immer synchron mit der Intro-Form.
+        /// </summary>
         private void SyncOverlayPosition()
         {
             if (overlayForm != null && !overlayForm.IsDisposed)
@@ -97,10 +102,13 @@ namespace EnzuGame.Forms
             }
         }
 
-        // --------- Das Overlay-Fenster als verschachtelte Klasse ---------
+        /// <summary>
+        /// Overlay-Fenster, das optional Text anzeigt.
+        /// </summary>
         private class SkipOverlayForm : Form
         {
             private readonly string overlayText;
+
             public SkipOverlayForm(Form parent, string text)
             {
                 this.overlayText = text;
@@ -118,20 +126,25 @@ namespace EnzuGame.Forms
                 this.Paint += SkipOverlayForm_Paint;
             }
 
-            private void SkipOverlayForm_Paint(object sender, PaintEventArgs e)
+            /// <summary>
+            /// Zeichnet ggf. den Overlay-Text.
+            /// </summary>
+            private void SkipOverlayForm_Paint(object? sender, PaintEventArgs e)
             {
-                if (string.IsNullOrEmpty(overlayText)) return; // Kein Text zeichnen
+                if (string.IsNullOrEmpty(overlayText)) return;
                 using (var font = new Font("Segoe UI", 22, FontStyle.Bold, GraphicsUnit.Pixel))
                 {
                     SizeF textSize = e.Graphics.MeasureString(overlayText, font);
                     float x = (this.ClientSize.Width - textSize.Width) / 2f;
                     float y = this.ClientSize.Height - textSize.Height - 30;
 
+                    // Schatten
                     for (int dx = -2; dx <= 2; dx++)
                         for (int dy = -2; dy <= 2; dy++)
                             if (dx != 0 || dy != 0)
                                 e.Graphics.DrawString(overlayText, font, Brushes.Black, x + dx, y + dy);
 
+                    // Weißer Text
                     e.Graphics.DrawString(overlayText, font, Brushes.White, x, y);
                 }
             }
