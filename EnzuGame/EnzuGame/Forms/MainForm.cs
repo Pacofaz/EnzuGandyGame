@@ -7,35 +7,47 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace EnzuGame.Forms
 {
+    /// <summary>
+    /// Hauptmenü des Spiels. Zeigt Buttons (Start, Einstellungen, Beenden) an
+    /// und kümmert sich um das Layout und die Events.
+    /// </summary>
     public partial class MainForm : BaseForm
     {
+        // --- Konstanten für Ressourcenpfade ---
         private const string BgPath = "Resources/background.png";
         private const string OverlayPath = "Resources/overlay_board.png";
         private const string SoundtrackPath = "Resources/soundtrack.wav";
 
+        /// <summary>
+        /// Definiert, wie die Buttons im Hauptmenü aussehen und platziert werden.
+        /// </summary>
         private readonly (string normal, string hover, string pressed, Rectangle rect, string key)[] buttonConfigs = {
-            ("Resources/btn_start.png", "Resources/btn_start_hover.png", "Resources/btn_start_pressed.png", new Rectangle(90, 60, 140, 30), "Start"),
-            ("Resources/btn_settings.png", "Resources/btn_settings_hover.png", "Resources/btn_settings_pressed.png", new Rectangle(90, 90, 140, 30), "Settings"),
-            ("Resources/btn_exit.png", "Resources/btn_exit_hover.png", "Resources/btn_exit_pressed.png", new Rectangle(90, 120, 140, 30), "Exit"),
+            ("Resources/btn_start.png",    "Resources/btn_start_hover.png",    "Resources/btn_start_pressed.png",    new Rectangle(90,  60, 140, 30), "Start"),
+            ("Resources/btn_settings.png", "Resources/btn_settings_hover.png", "Resources/btn_settings_pressed.png", new Rectangle(90,  90, 140, 30), "Settings"),
+            ("Resources/btn_exit.png",     "Resources/btn_exit_hover.png",     "Resources/btn_exit_pressed.png",     new Rectangle(90, 120, 140, 30), "Exit"),
         };
 
+        // --- Layout-Parameter für das Overlay-Board ---
         private readonly Size overlayOriginalSize = new(320, 200);
         private Rectangle overlayRect;
         private float scaleFactorX = 1f, scaleFactorY = 1f;
 
+        // --- Ressourcen und Buttons ---
         private Image? backgroundImage;
         private Image? overlayImage;
         private readonly Dictionary<string, ImageButton> buttons = new();
+
+        // --- Verweise auf geöffnete Sub-Forms ---
         private Form? activeSettingsForm;
         private Form? activeLevelSelectForm;
 
+        /// <summary>
+        /// Initialisiert das Hauptmenü und lädt Grafiken und Buttons.
+        /// </summary>
         public MainForm()
         {
             DoubleBuffered = true;
@@ -44,17 +56,33 @@ namespace EnzuGame.Forms
             ClientSize = new Size(640, 480);
             InitializeComponent();
 
-            backgroundImage = LoadImage(BgPath);
-            overlayImage = LoadImage(OverlayPath);
+            backgroundImage = TryLoadImage(BgPath);
+            overlayImage = TryLoadImage(OverlayPath);
 
             CreateButtons();
             Resize += (_, _) => RepositionUI();
             Load += MainForm_Load;
         }
 
-        private Image LoadImage(string path)
-            => File.Exists(path) ? Image.FromFile(path) : throw new FileNotFoundException($"Bild nicht gefunden: {path}");
+        /// <summary>
+        /// Versucht, ein Bild von Platte zu laden. Gibt null zurück, wenn das Bild nicht gefunden wird.
+        /// </summary>
+        private Image? TryLoadImage(string path)
+        {
+            try
+            {
+                return File.Exists(path) ? Image.FromFile(path) : null;
+            }
+            catch
+            {
+                // Fehlerhandling für defekte oder fehlende Ressourcen
+                return null;
+            }
+        }
 
+        /// <summary>
+        /// Wird beim Laden der Form ausgeführt. Initialisiert die Einstellungen, startet die Musik und positioniert das UI.
+        /// </summary>
         private void MainForm_Load(object? sender, EventArgs e)
         {
             GameSettings.Initialize(this);
@@ -63,6 +91,9 @@ namespace EnzuGame.Forms
             RepositionUI();
         }
 
+        /// <summary>
+        /// Erstellt die Hauptmenü-Buttons und registriert ihre Click-Events.
+        /// </summary>
         private void CreateButtons()
         {
             var clickActions = new Dictionary<string, EventHandler>
@@ -76,9 +107,9 @@ namespace EnzuGame.Forms
             {
                 var btn = new ImageButton
                 {
-                    NormalImage = LoadImage(normal),
-                    HoverImage = LoadImage(hover),
-                    ClickedImage = LoadImage(pressed),
+                    NormalImage = TryLoadImage(normal) ?? new Bitmap(rect.Width, rect.Height),
+                    HoverImage = TryLoadImage(hover) ?? new Bitmap(rect.Width, rect.Height),
+                    ClickedImage = TryLoadImage(pressed) ?? new Bitmap(rect.Width, rect.Height),
                     Size = rect.Size
                 };
                 btn.Click += clickActions[key];
@@ -87,6 +118,9 @@ namespace EnzuGame.Forms
             }
         }
 
+        /// <summary>
+        /// Berechnet die aktuelle Overlay- und Button-Positionen abhängig von der Fenstergröße.
+        /// </summary>
         private void RepositionUI()
         {
             float targetWidth = GameSettings.Fullscreen ? ClientSize.Width * 0.4f : overlayOriginalSize.Width;
@@ -114,19 +148,22 @@ namespace EnzuGame.Forms
             Invalidate();
         }
 
+        /// <summary>
+        /// Öffnet das Level-Auswahlfenster modal, blendet das Hauptmenü währenddessen aus.
+        /// </summary>
         private void BtnStart_Click(object? sender, EventArgs e)
         {
             Hide();
             using (var levelSelect = new LevelSelectForm())
             {
-                levelSelect.ShowDialog(this); // Modal!
+                levelSelect.ShowDialog(this);
             }
-            Show(); // Danach wieder anzeigen (keine neue Instanz erzeugen)
+            Show();
         }
 
-
-
-
+        /// <summary>
+        /// Öffnet das Einstellungsfenster modal. Nur eine Instanz gleichzeitig erlaubt.
+        /// </summary>
         private void BtnSettings_Click(object? sender, EventArgs e)
         {
             if (activeSettingsForm == null || activeSettingsForm.IsDisposed)
@@ -138,8 +175,14 @@ namespace EnzuGame.Forms
             else { activeSettingsForm.Activate(); }
         }
 
+        /// <summary>
+        /// Beendet das Programm, wenn der Exit-Button gedrückt wird.
+        /// </summary>
         private void BtnExit_Click(object? sender, EventArgs e) => Close();
 
+        /// <summary>
+        /// Zeichnet Hintergrund und Overlay neu.
+        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
