@@ -1,15 +1,18 @@
 ﻿using EnzuGame.Forms;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace EnzuGame
 {
+    /// <summary>
+    /// Haupt-Einstiegspunkt für die EnzuGame-Anwendung.
+    /// Initialisiert den ApplicationContext und steuert den Ablauf (Intro, MainMenu).
+    /// </summary>
     static class Program
     {
-        // In Program.cs
+        /// <summary>
+        /// Einstiegspunkt für die Anwendung (Single-Threaded Apartment).
+        /// </summary>
         [STAThread]
         static void Main()
         {
@@ -18,8 +21,11 @@ namespace EnzuGame
             Application.Run(new MyAppContext());
         }
 
-        // Neue Klasse im Projekt anlegen
-        public class MyAppContext : ApplicationContext
+        /// <summary>
+        /// Custom ApplicationContext für die Kontrolle des App-Lebenszyklus.
+        /// Öffnet zuerst das Intro, danach das Hauptmenü.
+        /// </summary>
+        public sealed class MyAppContext : ApplicationContext
         {
             public MyAppContext()
             {
@@ -34,6 +40,5 @@ namespace EnzuGame
                 intro.Show();
             }
         }
-
     }
 }

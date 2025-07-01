@@ -1,80 +1,82 @@
 ﻿using EnzuGame.Forms;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Printing;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace EnzuGame.Klassen
 {
+    /// <summary>
+    /// Verwaltet globale Spieleinstellungen, speichert/liest sie in XML und
+    /// synchronisiert sie mit UI-Formularen und dem SoundManager.
+    /// </summary>
     public static class GameSettings
     {
-        // --- Konstanten ---
+        // --- Konfigurationswerte & Defaults ---
         private const string SettingsFilePath = "settings.xml";
         private const string MusicFilePath = "Resources/soundtrack.wav";
         private const int DefaultUnlockedLevel = 1;
 
-        // --- Einstellungen ---
+        // --- Persistente Einstellungen (Property-Style für Serialization) ---
         public static bool Level2Unlocked { get; set; } = false;
         public static int UnlockedLevel { get; set; } = DefaultUnlockedLevel;
         public static bool Fullscreen { get; set; } = true;
-        public static int Brightness { get; set; } = 80; // 0–100
-        public static int MusicVolume { get; set; } = 60;
-        public static int SoundVolume { get; set; } = 50;
+        public static int Brightness { get; set; } = 80; // 1–100
+        public static int MusicVolume { get; set; } = 60; // 0–100
+        public static int SoundVolume { get; set; } = 50; // 0–100
 
-        // --- Synchronisation für Thread-Sicherheit ---
+        // --- Synchronisation & UI-State ---
         private static readonly object settingsLock = new object();
+        private static readonly List<Form> activeForms = new List<Form>();
+        private static readonly Dictionary<Form, PaintEventHandler> registeredPaintHandlers = new();
 
-        // --- Forms- und Handler-Verwaltung ---
-        private static List<Form> activeForms = new List<Form>();
-        private static Dictionary<Form, PaintEventHandler> registeredPaintHandlers = new Dictionary<Form, PaintEventHandler>();
-
-        // --- Registrierung des Hauptformulars für Vollbildverwaltung ---
-        private static Form activeForm;
+        // --- Für Vollbildumschaltung (Restore nach Windowed) ---
+        private static Form? activeForm;
         private static FormWindowState previousWindowState;
         private static FormBorderStyle previousBorderStyle;
         private static Rectangle previousBounds;
 
+        /// <summary>
+        /// Initialisiert das Setting-System und lädt (optional) Einstellungen aus Datei.
+        /// </summary>
         public static void Initialize(Form mainForm)
         {
             activeForm = mainForm;
             LoadSettings();
+            Brightness = Math.Max(1, Brightness); // Nie zu dunkel
 
-            // Brightness sicherstellen
-            Brightness = Math.Max(1, Brightness);
-
-            // Helligkeitseffekte aktivieren
             RegisterForm(mainForm);
-
             ApplySettings();
 
-            // Hintergrundmusik starten (nur wenn sie noch nicht läuft)
-            if (mainForm is EnzuGame.Forms.MainForm && !SoundManager.IsMusicPlaying())
+            // Hintergrundmusik starten (nur MainForm)
+            if (mainForm is MainForm && !SoundManager.IsMusicPlaying())
             {
                 SoundManager.PlayBackgroundMusic(MusicFilePath);
                 SoundManager.SetMusicVolume(MusicVolume / 100.0f);
             }
         }
 
+        /// <summary>
+        /// Registriert ein Form für Brightness-Overlay und Auto-Update bei Setting-Änderungen.
+        /// </summary>
         public static void RegisterForm(Form form)
         {
-            if (form == null) return;
-
-            // Schon registriert?
-            if (activeForms.Contains(form)) return;
+            if (form == null || activeForms.Contains(form))
+                return;
 
             activeForms.Add(form);
-
             form.FormClosed -= FormClosed_Handler;
             form.FormClosed += FormClosed_Handler;
 
-            // Handler verwalten
-            if (registeredPaintHandlers.TryGetValue(form, out PaintEventHandler oldHandler))
+            // Paint-Handler für Brightness
+            if (registeredPaintHandlers.TryGetValue(form, out var oldHandler))
                 form.Paint -= oldHandler;
 
-            PaintEventHandler newHandler = new PaintEventHandler(Form_Paint);
+            PaintEventHandler newHandler = Form_Paint;
             registeredPaintHandlers[form] = newHandler;
             form.Paint += newHandler;
 
@@ -82,18 +84,16 @@ namespace EnzuGame.Klassen
                 form.Invalidate();
         }
 
-        private static void FormClosed_Handler(object sender, FormClosedEventArgs e)
-        {
-            if (sender is Form form)
-                UnregisterForm(form);
-        }
-
+        /// <summary>
+        /// Entfernt das Form aus der Brightness- und Handler-Verwaltung.
+        /// </summary>
         public static void UnregisterForm(Form form)
         {
-            if (form == null) return;
+            if (form == null)
+                return;
 
             form.FormClosed -= FormClosed_Handler;
-            if (registeredPaintHandlers.TryGetValue(form, out PaintEventHandler handler))
+            if (registeredPaintHandlers.TryGetValue(form, out var handler))
             {
                 try
                 {
@@ -105,28 +105,40 @@ namespace EnzuGame.Klassen
                     Console.WriteLine($"Fehler beim Entfernen des Paint-Handlers: {ex.Message}");
                 }
             }
-
             activeForms.Remove(form);
         }
 
-        private static void Form_Paint(object sender, PaintEventArgs e)
+        /// <summary>
+        /// Zeichnet das Helligkeits-Overlay auf jedem Form (außer SettingsForm).
+        /// </summary>
+        private static void Form_Paint(object? sender, PaintEventArgs e)
         {
-            if (sender is Form form && !(form is EnzuGame.Forms.SettingsForm))
+            if (sender is Form form && !(form is SettingsForm))
                 ApplyBrightnessOverlay(e.Graphics, form.ClientRectangle);
         }
 
         /// <summary>
-        /// Überlagert das Formular mit einem schwarzen, (teil-)transparenten Overlay je nach Brightness-Wert.
-        /// 100 = kein Overlay, 0 = halbtransparentes Schwarz.
+        /// Event: Form wurde geschlossen, deregistriert das Form.
+        /// </summary>
+        private static void FormClosed_Handler(object? sender, FormClosedEventArgs e)
+        {
+            if (sender is Form form)
+                UnregisterForm(form);
+        }
+
+        /// <summary>
+        /// Überlagert einen Bereich mit einem halbtransparenten Overlay je nach Brightness-Wert.
         /// </summary>
         public static void ApplyBrightnessOverlay(Graphics g, Rectangle rect)
         {
-            // 0.0 (keine Abdunklung) bis 0.5 (halbtransparent)
-            float brightnessAlpha = (100 - Brightness) / 200.0f;
-            using (SolidBrush overlay = new SolidBrush(Color.FromArgb((int)(brightnessAlpha * 255), Color.Black)))
+            float brightnessAlpha = (100 - Brightness) / 200.0f; // max. 0.5f
+            using (SolidBrush overlay = new(Color.FromArgb((int)(brightnessAlpha * 255), Color.Black)))
                 g.FillRectangle(overlay, rect);
         }
 
+        /// <summary>
+        /// Überträgt die Einstellungen auf UI, Musik & Speicher.
+        /// </summary>
         public static void ApplySettings()
         {
             if (activeForm != null)
@@ -136,7 +148,6 @@ namespace EnzuGame.Klassen
                 if (form != null && form.IsHandleCreated && !form.IsDisposed)
                     form.Invalidate();
 
-            // Musik nur starten, wenn sie noch nicht läuft!
             if (!SoundManager.IsMusicPlaying())
                 SoundManager.PlayBackgroundMusic(MusicFilePath);
 
@@ -145,6 +156,9 @@ namespace EnzuGame.Klassen
             SaveSettings();
         }
 
+        /// <summary>
+        /// Schaltet den Vollbildmodus um und speichert sofort.
+        /// </summary>
         public static void ToggleFullscreen()
         {
             Fullscreen = !Fullscreen;
@@ -152,9 +166,13 @@ namespace EnzuGame.Klassen
             SaveSettings();
         }
 
+        /// <summary>
+        /// Setzt das aktuelle Form in (oder aus) den Vollbildmodus.
+        /// </summary>
         private static void ApplyFullscreenMode(bool fullscreen)
         {
             if (activeForm == null) return;
+
             try
             {
                 if (fullscreen)
@@ -166,7 +184,7 @@ namespace EnzuGame.Klassen
                         previousBounds = activeForm.Bounds;
                     }
                     activeForm.FormBorderStyle = FormBorderStyle.None;
-                    activeForm.WindowState = FormWindowState.Normal;
+                    activeForm.WindowState = FormWindowState.Normal; // Für sauber reset
                     activeForm.WindowState = FormWindowState.Maximized;
                 }
                 else
@@ -183,7 +201,7 @@ namespace EnzuGame.Klassen
                         activeForm.WindowState = previousWindowState;
                 }
 
-                if (activeForm is EnzuGame.Forms.MainForm mainForm)
+                if (activeForm is MainForm mainForm)
                 {
                     var method = mainForm.GetType().GetMethod("RepositionUIElements", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     method?.Invoke(mainForm, null);
@@ -197,6 +215,9 @@ namespace EnzuGame.Klassen
 
         public static string GetFullscreenText() => Fullscreen ? "Vollbild" : "Fenster";
 
+        /// <summary>
+        /// Speichert alle Einstellungen als XML.
+        /// </summary>
         public static void SaveSettings()
         {
             lock (settingsLock)
@@ -211,9 +232,9 @@ namespace EnzuGame.Klassen
                         SoundVolume = SoundVolume,
                         UnlockedLevel = UnlockedLevel
                     };
-                    XmlSerializer serializer = new XmlSerializer(typeof(SerializableSettings));
-                    using (StreamWriter writer = new StreamWriter(SettingsFilePath))
-                        serializer.Serialize(writer, settings);
+                    XmlSerializer serializer = new(typeof(SerializableSettings));
+                    using StreamWriter writer = new(SettingsFilePath);
+                    serializer.Serialize(writer, settings);
                 }
                 catch (Exception ex)
                 {
@@ -222,6 +243,9 @@ namespace EnzuGame.Klassen
             }
         }
 
+        /// <summary>
+        /// Lädt alle Einstellungen aus XML (oder übernimmt Defaults).
+        /// </summary>
         public static void LoadSettings()
         {
             lock (settingsLock)
@@ -229,29 +253,29 @@ namespace EnzuGame.Klassen
                 try
                 {
                     if (!File.Exists(SettingsFilePath)) return;
-                    XmlSerializer serializer = new XmlSerializer(typeof(SerializableSettings));
-                    using (StreamReader reader = new StreamReader(SettingsFilePath))
-                    {
-                        var settings = (SerializableSettings)serializer.Deserialize(reader);
-                        if (settings == null)
-                            throw new InvalidDataException("Deserialisierte Einstellungen sind null!");
+                    XmlSerializer serializer = new(typeof(SerializableSettings));
+                    using StreamReader reader = new(SettingsFilePath);
+                    var settings = serializer.Deserialize(reader) as SerializableSettings;
+                    if (settings == null)
+                        throw new InvalidDataException("Deserialisierte Einstellungen sind null!");
 
-                        Fullscreen = settings.Fullscreen;
-                        Brightness = settings.Brightness;
-                        MusicVolume = settings.MusicVolume;
-                        SoundVolume = settings.SoundVolume;
-                        UnlockedLevel = Math.Max(1, settings.UnlockedLevel);
-                    }
+                    Fullscreen = settings.Fullscreen;
+                    Brightness = settings.Brightness;
+                    MusicVolume = settings.MusicVolume;
+                    SoundVolume = settings.SoundVolume;
+                    UnlockedLevel = Math.Max(1, settings.UnlockedLevel);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Fehler beim Laden der Einstellungen: {ex.Message}");
-                    // Datei löschen, falls sie defekt ist (optional)
                     try { File.Delete(SettingsFilePath); } catch { }
                 }
             }
         }
 
+        /// <summary>
+        /// Einstellungen, die gespeichert werden.
+        /// </summary>
         [Serializable]
         public class SerializableSettings
         {
