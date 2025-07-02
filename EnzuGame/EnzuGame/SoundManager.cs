@@ -6,120 +6,124 @@ using System.Windows.Forms;
 
 namespace EnzuGame
 {
+    /// <summary>
+    /// Verwaltet die Musikwiedergabe im gesamten Spiel.
+    /// Stellt Methoden zum Starten, Stoppen, Abspielen und zur Lautstärkeanpassung bereit.
+    /// Arbeitet WAV-basiert und unterstützt Endlos-Wiedergabe und One-Shot-Sounds.
+    /// </summary>
     public static class SoundManager
     {
-        private static SoundPlayer musicPlayer;
-        private static float musicVolume = 1.0f; // 0.0 bis 1.0
-        private static string currentMusicPath;
+        private static readonly SoundPlayer musicPlayer = new SoundPlayer();
+        private static float musicVolume = 1.0f; // Bereich: 0.0 - 1.0
+        private static string currentMusicPath = string.Empty;
         private static bool isMusicPlaying = false;
-
-        [DllImport("winmm.dll")]
-        private static extern int waveOutGetVolume(IntPtr hwo, out uint dwVolume);
 
         [DllImport("winmm.dll")]
         private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
 
+        // Initialisiert statische Ressourcen und registriert das Exit-Event
         static SoundManager()
         {
-            try
-            {
-                musicPlayer = new SoundPlayer();
-                Application.ApplicationExit += OnApplicationExit;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fehler beim Initialisieren des Sound-Systems: {ex.Message}", "Fehler",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            Application.ApplicationExit += OnApplicationExit;
         }
 
-        // Musik im Loop (z.B. für MainMenu)
+        /// <summary>
+        /// Startet ein Musikstück als Endlos-Loop.
+        /// </summary>
+        /// <param name="filePath">Pfad zur WAV-Datei</param>
         public static void PlayBackgroundMusic(string filePath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+                return;
+
+            string fullPath = Path.GetFullPath(filePath);
+
+            if (isMusicPlaying && string.Equals(currentMusicPath, fullPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (!File.Exists(fullPath))
+            {
+                LogWarning($"Musikdatei nicht gefunden: {fullPath}");
+                return;
+            }
+
+            StopBackgroundMusic();
+
             try
             {
-                if (string.IsNullOrEmpty(filePath))
-                    return;
-
-                if (isMusicPlaying && currentMusicPath == filePath)
-                    return;
-
-                currentMusicPath = filePath;
-
-                string fullPath = Path.GetFullPath(filePath);
-                if (!File.Exists(filePath))
-                {
-                    SystemSounds.Asterisk.Play();
-                    MessageBox.Show($"Soundtrack konnte nicht gefunden werden!\nGesucht wurde in: {fullPath}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                StopBackgroundMusic();
-
-                musicPlayer.SoundLocation = filePath;
+                musicPlayer.SoundLocation = fullPath;
                 musicPlayer.Load();
                 musicPlayer.PlayLooping();
                 isMusicPlaying = true;
+                currentMusicPath = fullPath;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"WAV-Datei kann nicht abgespielt werden:\n{ex.Message}", "Audiofehler");
+                LogError($"WAV-Datei kann nicht abgespielt werden: {ex.Message}");
                 isMusicPlaying = false;
             }
         }
 
-        // Nur einmal abspielen (z.B. für Intro)
+        /// <summary>
+        /// Spielt einen Soundtrack nur einmal ab (z.B. für Intros).
+        /// </summary>
+        /// <param name="filePath">Pfad zur WAV-Datei</param>
         public static void PlaySoundOnce(string filePath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+                return;
+
+            string fullPath = Path.GetFullPath(filePath);
+
+            if (!File.Exists(fullPath))
+            {
+                LogWarning($"Sounddatei nicht gefunden: {fullPath}");
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrEmpty(filePath))
-                    return;
-
-                string fullPath = Path.GetFullPath(filePath);
-                if (!File.Exists(filePath))
-                {
-                    SystemSounds.Asterisk.Play();
-                    MessageBox.Show(
-                        $"Soundtrack konnte nicht gefunden werden!\nGesucht wurde in: {fullPath}",
-                        "Fehler",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    return;
-                }
-
                 musicPlayer.Stop();
-                musicPlayer.SoundLocation = filePath;
+                musicPlayer.SoundLocation = fullPath;
                 musicPlayer.Load();
-                musicPlayer.Play(); // <-- Nur einmal abspielen!
+                musicPlayer.Play(); // Nur einmal!
                 isMusicPlaying = true;
+                currentMusicPath = fullPath;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"WAV-Datei kann nicht abgespielt werden:\n{ex.Message}", "Audiofehler");
+                LogError($"WAV-Datei kann nicht abgespielt werden: {ex.Message}");
                 isMusicPlaying = false;
             }
         }
 
+        /// <summary>
+        /// Stoppt die aktuell laufende Musik.
+        /// </summary>
         public static void StopBackgroundMusic()
         {
             try
             {
-                if (musicPlayer != null)
-                {
-                    musicPlayer.Stop();
-                    isMusicPlaying = false;
-                }
+                musicPlayer?.Stop();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Stoppen der Musik: {ex.Message}");
+                LogError($"Fehler beim Stoppen der Musik: {ex.Message}");
+            }
+            finally
+            {
+                isMusicPlaying = false;
             }
         }
 
+        /// <summary>
+        /// Setzt die globale Musiklautstärke. (0.0 = stumm, 1.0 = max)
+        /// Bei 0 wird die Musik gestoppt.
+        /// </summary>
+        /// <param name="volume">Lautstärke (0.0 - 1.0)</param>
         public static void SetMusicVolume(float volume)
         {
-            musicVolume = Math.Max(0, Math.Min(1, volume));
+            musicVolume = Math.Max(0.0f, Math.Min(1.0f, volume));
             try
             {
                 uint newVolume = (uint)(musicVolume * 0xFFFF);
@@ -137,23 +141,44 @@ namespace EnzuGame
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Ändern der Lautstärke: {ex.Message}");
+                LogError($"Fehler beim Ändern der Lautstärke: {ex.Message}");
             }
         }
 
-        public static float GetMusicVolume()
-        {
-            return musicVolume;
-        }
+        /// <summary>
+        /// Gibt die aktuelle Musiklautstärke zurück.
+        /// </summary>
+        public static float GetMusicVolume() => musicVolume;
 
+        /// <summary>
+        /// Gibt zurück, ob aktuell Musik abgespielt wird.
+        /// </summary>
+        public static bool IsMusicPlaying() => isMusicPlaying;
+
+        /// <summary>
+        /// Wird beim Schließen der Anwendung aufgerufen. Stoppt die Musik.
+        /// </summary>
         private static void OnApplicationExit(object sender, EventArgs e)
         {
             StopBackgroundMusic();
         }
 
-        public static bool IsMusicPlaying()
+        /// <summary>
+        /// Schreibt eine Warnung in die Konsole und gibt optional einen System-Sound aus.
+        /// </summary>
+        private static void LogWarning(string message)
         {
-            return isMusicPlaying;
+            SystemSounds.Asterisk.Play();
+            Console.WriteLine("[SoundManager-Warnung] " + message);
+        }
+
+        /// <summary>
+        /// Schreibt einen Fehler in die Konsole und gibt optional einen System-Sound aus.
+        /// </summary>
+        private static void LogError(string message)
+        {
+            SystemSounds.Hand.Play();
+            Console.WriteLine("[SoundManager-Fehler] " + message);
         }
     }
 }
