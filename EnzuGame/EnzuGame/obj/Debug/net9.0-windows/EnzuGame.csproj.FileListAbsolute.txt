@@ -269,3 +269,4 @@ C:\Users\recke\Desktop\EnzuGame\EnzuGame\obj\Debug\net9.0-windows\refint\EnzuGam
 C:\Users\recke\Desktop\EnzuGame\EnzuGame\obj\Debug\net9.0-windows\EnzuGame.pdb
 C:\Users\recke\Desktop\EnzuGame\EnzuGame\obj\Debug\net9.0-windows\EnzuGame.genruntimeconfig.cache
 C:\Users\recke\Desktop\EnzuGame\EnzuGame\obj\Debug\net9.0-windows\ref\EnzuGame.dll
+C:\Users\recke\Desktop\EnzuGame\EnzuGame\obj\Debug\net9.0-windows\EnzuGame.Forms.level3Form.resources
