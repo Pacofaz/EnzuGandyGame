@@ -7,8 +7,10 @@ namespace EnzuLauncherV2
     public partial class FormGamePreview : Form
     {
         private Image logoImage;
-        private string gameTitle;
+        private Image startButtonImage;
+        private Rectangle startButtonRect;
 
+        private string gameTitle;
         private Image[] galleryImages;
         private int selectedIndex = 0;
 
@@ -25,6 +27,7 @@ namespace EnzuLauncherV2
             this.BackColor = Color.FromArgb(43, 43, 43);
 
             logoImage = Image.FromFile("Resources/Enzulogo.png");
+            startButtonImage = Image.FromFile("Resources/start_button.png");
 
             // Dynamische Galerie je nach Spiel:
             if (gameTitle == "Candy Game")
@@ -49,11 +52,23 @@ namespace EnzuLauncherV2
             }
             else
             {
-                // Default (leeres Array oder Platzhalterbild)
                 galleryImages = new Image[0];
             }
 
+            // --- Start-Button-Position ---
+            int btnWidth = 290;
+            int btnHeight = 80;
+            int btnX = this.ClientSize.Width - btnWidth - 180; // 180px vom rechten Rand
+            int btnY = 180; // Je nach Optik anpassbar 
+            startButtonRect = new Rectangle(btnX, btnY, btnWidth, btnHeight);
+
             this.MouseClick += FormGamePreview_MouseClick;
+            this.Resize += (s, e) => // Damit der Button beim Resize immer oben rechts bleibt
+            {
+                btnX = this.ClientSize.Width - btnWidth - 80;
+                startButtonRect = new Rectangle(btnX, btnY, btnWidth, btnHeight);
+                Invalidate();
+            };
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -62,7 +77,7 @@ namespace EnzuLauncherV2
 
             // Logo oben links
             int logoWidth = 120;
-            int logoHeight = 90;
+            int logoHeight = 60;
             int logoX = 25;
             int logoY = 20;
             if (logoImage != null)
@@ -94,7 +109,7 @@ namespace EnzuLauncherV2
                     imgWidth = img.Width * previewHeight / img.Height;
                     imgHeight = previewHeight;
 
-                    // Wenn zu breit, Breite begrenzen und Höhe anpassen
+                    // Breite anpassbar
                     if (imgWidth > previewMaxWidth)
                     {
                         imgWidth = previewMaxWidth;
@@ -130,6 +145,10 @@ namespace EnzuLauncherV2
                     e.Graphics.DrawRectangle(Pens.White, thumbRect);
                 }
             }
+
+            // Start-Button oben rechts
+            if (startButtonImage != null)
+                e.Graphics.DrawImage(startButtonImage, startButtonRect);
         }
 
         private void FormGamePreview_MouseClick(object sender, MouseEventArgs e)
@@ -158,13 +177,35 @@ namespace EnzuLauncherV2
                     {
                         selectedIndex = i;
                         this.Invalidate();
-                        break;
+                        return;
+                    }
+                }
+            }
+
+            // --- Start-Button Klick ---
+            if (startButtonRect.Contains(e.Location))
+            {
+                string exePath = "";
+                if (gameTitle == "Candy Game")
+                    exePath = @"C:\Pfad\zu\CandyGame.exe"; //Pfad noch anpassen
+                else if (gameTitle == "Igor Survival")
+                    exePath = @"C:\Pfad\zu\IgorSurvival.exe"; // Pfad noch anpassen
+
+                if (!string.IsNullOrEmpty(exePath))
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(exePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Spiel konnte nicht gestartet werden:\n" + ex.Message);
                     }
                 }
             }
         }
 
-        // Bild fitten ohne Verzerrung (object-fit: contain)
+        // Bild fitten ohne Verzerrung 
         private Size GetFitSize(Size original, Size box)
         {
             double wr = (double)box.Width / original.Width;
