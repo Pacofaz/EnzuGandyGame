@@ -105,13 +105,16 @@ namespace EnzuLauncherV2
             if (candyRect.Contains(e.Location))
             {
                 PlayClickSound();
-                MessageBox.Show("Candy Game geklickt! (Hier kommt später das Preview-Fenster)");
+                var preview = new FormGamePreview("Candy Game");
+                preview.ShowDialog();
             }
             else if (igorRect.Contains(e.Location))
             {
                 PlayClickSound();
-                MessageBox.Show("Igor Survival geklickt! (Hier kommt später das Preview-Fenster)");
+                var preview = new FormGamePreview("Igor Survival");
+                preview.ShowDialog();
             }
         }
+
     }
 }
