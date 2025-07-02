@@ -1,5 +1,4 @@
-﻿// Game.cs
-using Edward;
+﻿using Edward;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,6 +38,10 @@ namespace ZombieGame
         // Für Buy-Button-Puls
         private bool _justBought = false;
         private int _buyPulseTimer = 0;
+
+        // Neuer Timer für Damage-Flash
+        private const int DamageFlashDuration = 15;
+        private int _damageFlashTimer = 0;
 
         public Game(Size screenSize)
         {
@@ -109,6 +112,7 @@ namespace ZombieGame
                 if (zRect.IntersectsWith(playerRect) && z.CanAttack())
                 {
                     _player.Damage(10);
+                    _damageFlashTimer = DamageFlashDuration;
                     z.ResetAttackCooldown();
                     if (_player.Health <= 0 && !_deathHandled)
                     {
@@ -128,6 +132,7 @@ namespace ZombieGame
                 if (projRect.IntersectsWith(playerRect))
                 {
                     _player.Damage(10);
+                    _damageFlashTimer = DamageFlashDuration;
                     _enemyProjectiles.RemoveAt(i);
                     if (_player.Health <= 0 && !_deathHandled)
                     {
@@ -208,6 +213,17 @@ namespace ZombieGame
             // 2) UI immer darüber
             g.ResetTransform();
             UI.DrawGame(g, _player, _waveManager, _screenSize);
+
+            // 2.1) Schaden-Glow
+            if (_damageFlashTimer > 0)
+            {
+                int alpha = (int)(150f * (_damageFlashTimer / (float)DamageFlashDuration));
+                using (var flashBrush = new SolidBrush(Color.FromArgb(alpha, 255, 0, 0)))
+                {
+                    g.FillRectangle(flashBrush, 0, 0, _screenSize.Width, _screenSize.Height);
+                }
+                _damageFlashTimer--;
+            }
 
             // 3) Spezial-Zustände
             if (_state == GameState.GameOver)
