@@ -100,7 +100,7 @@ namespace EnzuGame.Forms
                         1 => () => true,
                         2 => () => GameSettings.Level2Unlocked,
                         3 => () => GameSettings.Level3Unlocked,
-                       // 4 => () => GameSettings.Level4Unlocked,
+                        4 => () => GameSettings.Level4Unlocked,
                         _ => () => false
                     };
 
@@ -239,7 +239,7 @@ namespace EnzuGame.Forms
                 1 => new Level1Form(),
                 2 => new Level2Form(),
                 3 => new level3Form(),
-               // 4 => new Level4Form(),
+                4 => new level4Form(),
 
                 _ => null
             };
