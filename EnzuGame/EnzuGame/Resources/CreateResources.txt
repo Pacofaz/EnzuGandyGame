@@ -1,0 +1,15 @@
+﻿WICHTIGER HINWEIS ZU RESSOURCEN
+
+Bitte stellen Sie sicher, dass folgende Dateien im Resources-Ordner existieren:
+
+1. background.png - Hintergrundbild des Hauptmenüs
+2. overlay_board.png - Overlay für die Menüoberfläche
+3. soundtrack.wav - Hintergrundmusik (WAV-Format)
+
+Alle Button-Bilder:
+- btn_start.png, btn_start_hover.png, btn_start_pressed.png
+- btn_settings.png, btn_settings_hover.png, btn_settings_pressed.png
+- btn_exit.png, btn_exit_hover.png, btn_exit_pressed.png
+
+Falls einige dieser Dateien fehlen, erstellen Sie bitte Platzhalter-Dateien mit entsprechenden Namen.
+Für die soundtrack.wav können Sie eine beliebige WAV-Datei verwenden oder eine leere erstellen.
