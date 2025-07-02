@@ -8,7 +8,9 @@ namespace EnzuLauncherV2
     {
         private Image logoImage;
         private Image startButtonImage;
+        private Image uskImage;
         private Rectangle startButtonRect;
+        private Rectangle uskRect;
 
         private string gameTitle;
         private Image[] galleryImages;
@@ -29,7 +31,7 @@ namespace EnzuLauncherV2
             logoImage = Image.FromFile("Resources/Enzulogo.png");
             startButtonImage = Image.FromFile("Resources/start_button.png");
 
-            // Dynamische Galerie je nach Spiel:
+            // Dynamische Galerie und USK-Bild je nach Spiel:
             if (gameTitle == "Candy Game")
             {
                 galleryImages = new Image[]
@@ -39,6 +41,7 @@ namespace EnzuLauncherV2
                     Image.FromFile("Resources/candy3.png"),
                     Image.FromFile("Resources/candy4.png"),
                 };
+                uskImage = Image.FromFile("Resources/usk12.png");
             }
             else if (gameTitle == "Igor Survival")
             {
@@ -49,24 +52,38 @@ namespace EnzuLauncherV2
                     Image.FromFile("Resources/igor3.png"),
                     Image.FromFile("Resources/igor4.png"),
                 };
+                uskImage = Image.FromFile("Resources/usk18.png");
             }
             else
             {
                 galleryImages = new Image[0];
+                uskImage = null;
             }
 
             // --- Start-Button-Position ---
             int btnWidth = 290;
             int btnHeight = 80;
-            int btnX = this.ClientSize.Width - btnWidth - 180; // 180px vom rechten Rand
-            int btnY = 180; // Je nach Optik anpassbar 
+            int btnX = this.ClientSize.Width - btnWidth - 180;
+            int btnY = 180;
             startButtonRect = new Rectangle(btnX, btnY, btnWidth, btnHeight);
 
+            // --- USK-Bild direkt darunter ---
+            int uskWidth = 290;
+            int uskHeight = 120;
+            int uskX = btnX + (btnWidth - uskWidth) / 2;
+            int uskY = btnY + btnHeight + 0;
+            uskRect = new Rectangle(uskX, uskY, uskWidth, uskHeight);
+
             this.MouseClick += FormGamePreview_MouseClick;
-            this.Resize += (s, e) => // Damit der Button beim Resize immer oben rechts bleibt
+            this.Resize += (s, e) =>
             {
                 btnX = this.ClientSize.Width - btnWidth - 80;
                 startButtonRect = new Rectangle(btnX, btnY, btnWidth, btnHeight);
+
+                uskX = btnX + (btnWidth - uskWidth) / 2;
+                uskY = btnY + btnHeight + 24;
+                uskRect = new Rectangle(uskX, uskY, uskWidth, uskHeight);
+
                 Invalidate();
             };
         }
@@ -77,7 +94,7 @@ namespace EnzuLauncherV2
 
             // Logo oben links
             int logoWidth = 120;
-            int logoHeight = 60;
+            int logoHeight = 90;
             int logoX = 25;
             int logoY = 20;
             if (logoImage != null)
@@ -91,32 +108,28 @@ namespace EnzuLauncherV2
                 int titleY = 70;
                 e.Graphics.DrawString(titel, font, Brushes.White, titleX, titleY);
 
-                // X-Position für die linke Kante (exakt unter dem "C")
                 int cX = titleX;
                 int previewY = titleY + (int)e.Graphics.MeasureString(titel, font).Height + 10;
 
-                // Höhe für das große Bild fest, maximale Breite z.B. 700px
                 int previewHeight = 400;
                 int previewMaxWidth = 700;
-
                 int imgWidth = previewMaxWidth;
                 int imgHeight = previewHeight;
+
                 if (galleryImages != null && galleryImages.Length > 0 && galleryImages[selectedIndex] != null)
                 {
                     Image img = galleryImages[selectedIndex];
 
-                    // Höhe immer previewHeight, Breite nach Seitenverhältnis berechnen
                     imgWidth = img.Width * previewHeight / img.Height;
                     imgHeight = previewHeight;
 
-                    // Breite anpassbar
                     if (imgWidth > previewMaxWidth)
                     {
                         imgWidth = previewMaxWidth;
                         imgHeight = img.Height * previewMaxWidth / img.Width;
                     }
 
-                    int imgX = cX; // Startet exakt unter dem "C"
+                    int imgX = cX;
                     int imgY = previewY;
 
                     e.Graphics.DrawImage(img, new Rectangle(imgX, imgY, imgWidth, imgHeight));
@@ -149,6 +162,22 @@ namespace EnzuLauncherV2
             // Start-Button oben rechts
             if (startButtonImage != null)
                 e.Graphics.DrawImage(startButtonImage, startButtonRect);
+
+            // USK-Bild darunter
+            if (uskImage != null)
+                e.Graphics.DrawImage(uskImage, uskRect);
+
+            // Text unterhalb des USK-Bildes
+            int textStartX = uskRect.X;
+            int textStartY = uskRect.Bottom + 10;
+            int lineHeight = 25;
+
+            using (Font textFont = new Font("Segoe UI", 16, FontStyle.Regular))
+            {
+                e.Graphics.DrawString("Entwickler: Enzu Games", textFont, Brushes.White, textStartX, textStartY);
+                e.Graphics.DrawString("Plattform: Windows", textFont, Brushes.White, textStartX, textStartY + lineHeight);
+                e.Graphics.DrawString("Veröffentlichungsdatum: 01.07.2025", textFont, Brushes.White, textStartX, textStartY + 2 * lineHeight);
+            }
         }
 
         private void FormGamePreview_MouseClick(object sender, MouseEventArgs e)
@@ -187,9 +216,9 @@ namespace EnzuLauncherV2
             {
                 string exePath = "";
                 if (gameTitle == "Candy Game")
-                    exePath = @"C:\Pfad\zu\CandyGame.exe"; //Pfad noch anpassen
+                    exePath = @"C:\Pfad\zu\CandyGame.exe"; // <-- Muss ich noch anpassen (WICHTIG)
                 else if (gameTitle == "Igor Survival")
-                    exePath = @"C:\Pfad\zu\IgorSurvival.exe"; // Pfad noch anpassen
+                    exePath = @"C:\Pfad\zu\IgorSurvival.exe"; // <-- ANPASSEN!!
 
                 if (!string.IsNullOrEmpty(exePath))
                 {

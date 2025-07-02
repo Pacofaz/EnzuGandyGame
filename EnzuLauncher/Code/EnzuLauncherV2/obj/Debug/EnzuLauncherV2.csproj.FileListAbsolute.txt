@@ -32,3 +32,5 @@ C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resourc
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor3.PNG
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor4.PNG
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\start_button.png
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\usk12.png
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\usk18.png
