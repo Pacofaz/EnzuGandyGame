@@ -23,3 +23,11 @@ C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\obj\Debug\EnzuLau
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\CandyGame.png
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\IgorSurvival.png
 C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\SoundClick1.wav
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\Candy1.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\Candy2.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\Candy3.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\Candy4.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor1.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor2.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor3.PNG
+C:\Users\Selcuk\EnzuGandyGame\EnzuLauncher\Code\EnzuLauncherV2\bin\Debug\Resources\igor4.PNG

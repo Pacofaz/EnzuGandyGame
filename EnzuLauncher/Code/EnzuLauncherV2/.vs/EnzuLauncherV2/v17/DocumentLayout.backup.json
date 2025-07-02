@@ -11,7 +11,7 @@
       "RelativeMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|c:\\users\\selcuk\\enzugandygame\\enzulauncher\\code\\enzulauncherv2\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|C:\\Users\\Selcuk\\EnzuGandyGame\\EnzuLauncher\\Code\\EnzuLauncherV2\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|solutionrelative:form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -23,7 +23,7 @@
       "RelativeMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|solutionrelative:form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|c:\\users\\selcuk\\enzugandygame\\enzulauncher\\code\\enzulauncherv2\\formgamepreview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|C:\\Users\\Selcuk\\EnzuGandyGame\\EnzuLauncher\\Code\\EnzuLauncherV2\\formgamepreview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{5F63AAF9-3075-43BC-B1A3-96F59B2C0B41}|EnzuLauncherV2.csproj|solutionrelative:formgamepreview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -55,7 +55,7 @@
               "RelativeDocumentMoniker": "FormGamePreview.cs",
               "ToolTip": "C:\\Users\\Selcuk\\EnzuGandyGame\\EnzuLauncher\\Code\\EnzuLauncherV2\\FormGamePreview.cs",
               "RelativeToolTip": "FormGamePreview.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAIwCQAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEAAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-02T18:54:03.354Z",
               "EditorCaption": ""
@@ -69,8 +69,7 @@
               "ToolTip": "C:\\Users\\Selcuk\\EnzuGandyGame\\EnzuLauncher\\Code\\EnzuLauncherV2\\FormGamePreview.cs [Entwurf]",
               "RelativeToolTip": "FormGamePreview.cs [Entwurf]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-02T18:53:58.795Z",
-              "EditorCaption": " [Entwurf]"
+              "WhenOpened": "2025-07-02T18:53:58.795Z"
             },
             {
               "$type": "Document",
@@ -94,8 +93,7 @@
               "RelativeToolTip": "Form1.cs",
               "ViewState": "AgIAAFcAAAAAAAAAAAAIwHUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-01T20:12:09.177Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-01T20:12:09.177Z"
             },
             {
               "$type": "Document",
@@ -107,8 +105,7 @@
               "RelativeToolTip": "Form1.Designer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-01T20:13:43.857Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-01T20:13:43.857Z"
             },
             {
               "$type": "Document",
@@ -120,8 +117,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-01T20:12:42.364Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-01T20:12:42.364Z"
             },
             {
               "$type": "Document",
@@ -132,8 +128,7 @@
               "ToolTip": "C:\\Users\\Selcuk\\EnzuGandyGame\\EnzuLauncher\\Code\\EnzuLauncherV2\\Form1.cs [Entwurf]",
               "RelativeToolTip": "Form1.cs [Entwurf]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-01T20:05:27.405Z",
-              "EditorCaption": " [Entwurf]"
+              "WhenOpened": "2025-07-01T20:05:27.405Z"
             }
           ]
         }
