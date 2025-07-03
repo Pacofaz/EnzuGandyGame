@@ -37,7 +37,7 @@ namespace ZombieGame.Utils
 
             // Datei öffnen
             Exec($"open \"{filePath}\" type mpegvideo alias {Alias}");
-            // Lautstärke auf 50 % setzen (Werte 0–1000, hier also 500)
+
             Exec($"setaudio {Alias} volume to 500");
 
             // Abspielen (mit optionalem Repeat)

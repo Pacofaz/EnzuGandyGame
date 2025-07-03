@@ -10,132 +10,197 @@ namespace ZombieGame
     public class StartMenuForm : Form
     {
         private Bitmap backgroundImage;
-        private Bitmap startButtonImage;
         private Rectangle startButtonBounds;
-        private bool isHovering;
+        private Rectangle settingsButtonBounds;
+        private bool isHoverStart;
+        private bool isHoverSettings;
 
         private PrivateFontCollection fonts = new PrivateFontCollection();
-        private Font titleFont;
+        private Font buttonFont;
 
-        // Button-Verschiebung in Pixel: 
-        // Positiv verschiebt nach rechts bzw. nach unten,
-        // negativ nach links bzw. nach oben.
-        private const int BUTTON_OFFSET_X = -10;
+        private const int BUTTON_WIDTH = 240;
+        private const int BUTTON_HEIGHT = 72;
         private const int BUTTON_OFFSET_Y = 460;
+        private const int BUTTON_GAP = 24;
+        private const int BUTTON_RADIUS = 16;
+        private readonly Color goldTop = Color.FromArgb(255, 224, 180, 20);
+        private readonly Color goldBottom = Color.FromArgb(255, 160, 120, 0);
 
         public StartMenuForm()
         {
-            InitializeForm();
+            DoubleBuffered = true;
+            KeyPreview = true;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+            TopMost = true;
+
+            MouseMove += (s, e) => UpdateHover(e.Location);
+            MouseClick += OnMouseClick;
+            KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) DialogResult = DialogResult.Cancel; };
+            Resize += (s, e) => { PositionButtons(); Invalidate(); };
+
             LoadAssets();
-            PositionButton();
+            PositionButtons();
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
-            PositionButton();
+            PositionButtons();
             Invalidate();
-        }
-
-        private void InitializeForm()
-        {
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
-            TopMost = true;
-            DoubleBuffered = true;
-            KeyPreview = true;
-
-            MouseMove += OnMouseMove;
-            MouseClick += OnMouseClick;
-            KeyDown += OnKeyDown;
-            Resize += (s, e) => { PositionButton(); Invalidate(); };
         }
 
         private void LoadAssets()
         {
             string baseDir = Application.StartupPath;
             backgroundImage = (Bitmap)Image.FromFile(Path.Combine(baseDir, "assets", "fullscreen.png"));
-            startButtonImage = (Bitmap)Image.FromFile(Path.Combine(baseDir, "assets", "start.png"));
 
             fonts.AddFontFile(Path.Combine(baseDir, "assets", "ZombieApocalypse8bit.ttf"));
-            titleFont = new Font(fonts.Families[0], 60, FontStyle.Bold);
+            buttonFont = new Font(fonts.Families[0], 28, FontStyle.Bold);
         }
 
-        private void PositionButton()
+        private void PositionButtons()
         {
-            var btnW = startButtonImage.Width;
-            var btnH = startButtonImage.Height;
+            int cx = (ClientSize.Width - BUTTON_WIDTH) / 2;
+            int cy = (ClientSize.Height - BUTTON_HEIGHT) / 2 + BUTTON_OFFSET_Y;
 
-            // Center + Offset
-            var centerX = (ClientSize.Width - btnW) / 2;
-            var centerY = (ClientSize.Height - btnH) / 2;
-
-            var x = centerX + BUTTON_OFFSET_X;
-            var y = centerY + BUTTON_OFFSET_Y;
-
-            startButtonBounds = new Rectangle(x, y, btnW, btnH);
+            startButtonBounds = new Rectangle(cx, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
+            settingsButtonBounds = new Rectangle(cx - BUTTON_WIDTH - BUTTON_GAP, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            SetRenderingHints(g);
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.CompositingQuality = CompositingQuality.HighQuality;
 
-
+            // Hintergrund
             g.DrawImage(backgroundImage, 0, 0, Width, Height);
 
+            // Buttons
+            DrawButton(g, settingsButtonBounds, "SETTINGS", isHoverSettings);
+            DrawButton(g, startButtonBounds, "START GAME", isHoverStart);
+        }
 
-            if (isHovering)
+        private void DrawButton(Graphics g, Rectangle rect, string text, bool hover)
+        {
+            // 1) Schatten
+            var shadowRect = new Rectangle(rect.X + 4, rect.Y + 4, rect.Width, rect.Height);
+            using (var shadowB = new SolidBrush(Color.FromArgb(120, 0, 0, 0)))
+                g.FillPath(shadowB, RoundedRect(shadowRect, BUTTON_RADIUS));
+
+            // 2) Goldener Verlauf + Kontur
+            using (var path = RoundedRect(rect, BUTTON_RADIUS))
+            using (var fill = new LinearGradientBrush(rect, goldTop, goldBottom, LinearGradientMode.Vertical))
             {
-                var glowRect = startButtonBounds;
-                glowRect.Inflate(12, 12);
-                using (var path = new GraphicsPath())
-                {
-                    path.AddRectangle(glowRect);
-                    using (var brush = new PathGradientBrush(path))
-                    {
-                        brush.CenterColor = Color.FromArgb(180, Color.Yellow);
-                        brush.SurroundColors = new[] { Color.FromArgb(0, Color.Yellow) };
-                        g.FillPath(brush, path);
-                    }
-                }
+                if (hover)
+                    fill.SetSigmaBellShape(0.6f);
+
+                g.FillPath(fill, path);
+                using (var darkPen = new Pen(Color.FromArgb(200, 50, 30, 0), 4) { LineJoin = LineJoin.Round })
+                    g.DrawPath(darkPen, path);
+                using (var lightPen = new Pen(Color.FromArgb(200, 255, 240, 180), 2) { LineJoin = LineJoin.Round })
+                    g.DrawPath(lightPen, path);
             }
 
-
-            g.DrawImage(startButtonImage, startButtonBounds);
-        }
-
-        private void SetRenderingHints(Graphics g)
-        {
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.PixelOffsetMode = PixelOffsetMode.Half;
-            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-        }
-
-        private void OnMouseMove(object sender, MouseEventArgs e)
-        {
-            bool nowHover = startButtonBounds.Contains(e.Location);
-            if (nowHover != isHovering)
+            // 3) Text mit Schatten und weißer Schrift
+            var sf = new StringFormat
             {
-                isHovering = nowHover;
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
+
+            // Text Schatten
+            var ts = new Rectangle(rect.X + 2, rect.Y + 2, rect.Width, rect.Height);
+            using (var tb = new SolidBrush(Color.FromArgb(100, 0, 0, 0)))
+                g.DrawString(text, buttonFont, tb, ts, sf);
+
+            // Weißer Text
+            g.DrawString(text, buttonFont, Brushes.White, rect, sf);
+        }
+
+        private GraphicsPath RoundedRect(Rectangle bounds, int radius)
+        {
+            int d = radius * 2;
+            var path = new GraphicsPath();
+            path.StartFigure();
+            path.AddArc(bounds.Left, bounds.Top, d, d, 180, 90);
+            path.AddArc(bounds.Right - d, bounds.Top, d, d, 270, 90);
+            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
+            path.AddArc(bounds.Left, bounds.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+
+        private void UpdateHover(Point mouse)
+        {
+            bool overStart = startButtonBounds.Contains(mouse);
+            bool overSettings = settingsButtonBounds.Contains(mouse);
+            if (overStart != isHoverStart || overSettings != isHoverSettings)
+            {
+                isHoverStart = overStart;
+                isHoverSettings = overSettings;
                 Invalidate(startButtonBounds);
+                Invalidate(settingsButtonBounds);
             }
         }
 
         private void OnMouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && startButtonBounds.Contains(e.Location))
+            if (e.Button != MouseButtons.Left) return;
+
+            if (startButtonBounds.Contains(e.Location))
             {
                 DialogResult = DialogResult.OK;
             }
+            else if (settingsButtonBounds.Contains(e.Location))
+            {
+                using (var settings = new SettingsForm())
+                {
+                    settings.FullscreenEnabled =
+                        (WindowState == FormWindowState.Maximized && FormBorderStyle == FormBorderStyle.None);
+                    if (settings.ShowDialog(this) == DialogResult.OK)
+                        ApplySettings(settings.FullscreenEnabled);
+                }
+            }
         }
 
-        private void OnKeyDown(object sender, KeyEventArgs e)
+        private void ApplySettings(bool fullscreen)
         {
-            if (e.KeyCode == Keys.Escape)
-                DialogResult = DialogResult.Cancel;
+            if (fullscreen)
+            {
+                FormBorderStyle = FormBorderStyle.None;
+                WindowState = FormWindowState.Maximized;
+                TopMost = true;
+            }
+            else
+            {
+                FormBorderStyle = FormBorderStyle.Sizable;
+                WindowState = FormWindowState.Normal;
+                TopMost = false;
+            }
+            PositionButtons();
+            Invalidate();
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // StartMenuForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "StartMenuForm";
+            this.Load += new System.EventHandler(this.StartMenuForm_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void StartMenuForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

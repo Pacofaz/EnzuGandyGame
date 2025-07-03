@@ -3,20 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|c:\\users\\onlin\\desktop\\neuer ordner (12)\\enzugandygame\\zombie game\\edward\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\musicplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\musicplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|c:\\users\\onlin\\desktop\\neuer ordner (12)\\enzugandygame\\zombie game\\edward\\map.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\map.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\zombie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,6 +13,18 @@
     {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\zombierange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\zombierange.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|c:\\users\\onlin\\desktop\\neuer ordner (12)\\enzugandygame\\zombie game\\edward\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\game.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\player.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|c:\\users\\onlin\\desktop\\neuer ordner (12)\\enzugandygame\\zombie game\\edward\\map.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\map.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\gamestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -41,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\gameform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\gameform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\weaponpickup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|solutionrelative:edward\\weaponpickup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8376B5DC-838E-414E-8F48-62EDE754C62E}|Edward\\Edward.csproj|C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\edward\\wavemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -86,19 +82,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
-            },
-            {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "Map.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Map.cs",
               "RelativeDocumentMoniker": "Edward\\Map.cs",
@@ -135,44 +127,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Game.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Game.cs",
               "RelativeDocumentMoniker": "Edward\\Game.cs",
-              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Game.cs*",
-              "RelativeToolTip": "Edward\\Game.cs*",
-              "ViewState": "AgIAAJkBAAAAAAAAAAAYwL0BAAAAAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Game.cs",
+              "RelativeToolTip": "Edward\\Game.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-03T20:02:07.106Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Player.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Player.cs",
               "RelativeDocumentMoniker": "Edward\\Player.cs",
-              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (10)\\EnzuGandyGame\\Zombie game\\Edward\\Player.cs*",
-              "RelativeToolTip": "..\\..\\..\\Neuer Ordner (10)\\EnzuGandyGame\\Zombie game\\Edward\\Player.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Player.cs",
+              "RelativeToolTip": "Edward\\Player.cs",
+              "ViewState": "AgIAALkAAAAAAAAAAAAAwOEAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T20:02:07.136Z"
+              "WhenOpened": "2025-07-03T20:02:07.136Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "Zombie.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Zombie.cs",
               "RelativeDocumentMoniker": "Edward\\Zombie.cs",
               "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Zombie.cs",
               "RelativeToolTip": "Edward\\Zombie.cs",
-              "ViewState": "AgIAAHEAAAAAAAAAAAAAwIMAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAIMAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T20:02:07.136Z"
+              "WhenOpened": "2025-07-03T20:02:07.136Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 12,
               "Title": "Projectile.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Projectile.cs",
               "RelativeDocumentMoniker": "Edward\\Projectile.cs",
@@ -184,19 +178,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
               "Title": "ZombieRange.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\ZombieRange.cs",
               "RelativeDocumentMoniker": "Edward\\ZombieRange.cs",
               "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\ZombieRange.cs",
               "RelativeToolTip": "Edward\\ZombieRange.cs",
-              "ViewState": "AgIAACsAAAAAAAAAAAAuwE4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T20:02:07.137Z"
+              "WhenOpened": "2025-07-03T20:02:07.137Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 10,
               "Title": "WaveManager.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\WaveManager.cs",
               "RelativeDocumentMoniker": "Edward\\WaveManager.cs",
@@ -208,16 +203,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "MusicPlayer.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\MusicPlayer.cs",
               "RelativeDocumentMoniker": "Edward\\MusicPlayer.cs",
-              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\MusicPlayer.cs",
-              "RelativeToolTip": "Edward\\MusicPlayer.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBIAAAAtAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\MusicPlayer.cs*",
+              "RelativeToolTip": "Edward\\MusicPlayer.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-03T20:02:07.141Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e5c86464-96be-4d7c-9a8b-abcb3bbf5f92}"
             },
             {
               "$type": "Document",
@@ -244,19 +243,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "WeaponPickup.cs",
-              "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\WeaponPickup.cs",
-              "RelativeDocumentMoniker": "Edward\\WeaponPickup.cs",
-              "ToolTip": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\WeaponPickup.cs",
-              "RelativeToolTip": "Edward\\WeaponPickup.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-03T20:02:07.139Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 11,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Program.cs",
               "RelativeDocumentMoniker": "Edward\\Program.cs",
@@ -268,7 +255,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 13,
               "Title": "StartMenuForm.resx",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\StartMenuForm.resx",
               "RelativeDocumentMoniker": "Edward\\StartMenuForm.resx",
@@ -279,7 +266,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 14,
               "Title": "RectangleExtension.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\RectangleExtension.cs",
               "RelativeDocumentMoniker": "Edward\\RectangleExtension.cs",
@@ -291,7 +278,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 15,
               "Title": "Resources.resx",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Properties\\Resources.resx",
               "RelativeDocumentMoniker": "Edward\\Properties\\Resources.resx",
@@ -302,7 +289,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 16,
               "Title": "Bullet.cs",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\Bullet.cs",
               "RelativeDocumentMoniker": "Edward\\Bullet.cs",
@@ -314,7 +301,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 17,
               "Title": "App.config",
               "DocumentMoniker": "C:\\Users\\onlin\\Desktop\\Neuer Ordner (12)\\EnzuGandyGame\\Zombie game\\Edward\\App.config",
               "RelativeDocumentMoniker": "Edward\\App.config",

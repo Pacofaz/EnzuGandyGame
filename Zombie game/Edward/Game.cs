@@ -26,6 +26,7 @@ namespace ZombieGame
         private Camera _camera;
         private WaveManager _waveManager;
         private readonly MusicPlayer _musicPlayer;
+        private readonly string _musicPath;
 
         private readonly List<Entity> _pickups = new List<Entity>();
         private readonly List<Bullet> _bullets = new List<Bullet>();
@@ -51,18 +52,10 @@ namespace ZombieGame
             _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _camera = new Camera(screenSize, _player) { Zoom = 1.9f };
             _waveManager = new WaveManager(_zombies, _map, _player, _enemyProj);
-            SpawnPickups();
 
             _musicPlayer = new MusicPlayer();
-            var path = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
-            _musicPlayer.Play(path, loop: true);
-        }
-
-        private void SpawnPickups()
-        {
-            _pickups.Add(new WeaponPickup(new PointF(350, 300), "Pistol"));
-            _pickups.Add(new WeaponPickup(new PointF(_map.Width - 350, _map.Height - 400), "Rifle"));
-            _pickups.Add(new HealthPickup(new PointF(_map.Width / 2f + 100, _map.Height / 2f)));
+            _musicPath = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
+            _musicPlayer.Play(_musicPath, loop: true);
         }
 
         // --- Haupt-Update-Schleife ---
@@ -96,7 +89,6 @@ namespace ZombieGame
 
             UpdateZombies(playerRect);
             UpdateEnemyProjectiles(playerRect);
-            UpdatePickups(playerRect);
             UpdateBullets();
 
             // Schießen mit Gewehr (Waffenindex 1)
@@ -157,21 +149,6 @@ namespace ZombieGame
                 {
                     _enemyProj.RemoveAt(i);
                 }
-            }
-        }
-
-        private void UpdatePickups(RectangleF pr)
-        {
-            for (int i = _pickups.Count - 1; i >= 0; i--)
-            {
-                var pu = _pickups[i];
-                var r = new RectangleF(pu.Position, pu.Size);
-                if (!r.IntersectsWith(pr)) continue;
-
-                if (pu is HealthPickup hp) _player.Heal(hp.GetHealAmount());
-                else if (pu is WeaponPickup wp) _player.AddWeapon(wp.WeaponName);
-
-                _pickups.RemoveAt(i);
             }
         }
 
@@ -332,14 +309,35 @@ namespace ZombieGame
             {
                 if (_tryAgainBtn.Contains(e.Location))
                 {
-                    Restart(); return true;
+                    Restart();
+                    return true;
                 }
                 if (_backToMenuBtn.Contains(e.Location))
                 {
-                    Form.ActiveForm?.Hide();
-                    using (var m = new StartMenuForm())
-                        if (m.ShowDialog() == DialogResult.OK)
+                    // 1) laufende Musik stoppen
+                    _musicPlayer.Stop();
+
+                    // 2) Game-Form verstecken
+                    var gameForm = Form.ActiveForm;
+                    gameForm?.Hide();
+
+                    // 3) Start-Menü anzeigen
+                    using (var menu = new StartMenuForm())
+                    {
+                        if (menu.ShowDialog() == DialogResult.OK)
+                        {
+                            // 4) Spiel zurücksetzen
                             Restart();
+                            // 5) Musik neu starten
+                            _musicPlayer.Play(_musicPath, loop: true);
+                            // 6) Game-Form wieder anzeigen
+                            gameForm?.Show();
+                        }
+                        else
+                        {
+                            Application.Exit();
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -381,7 +379,7 @@ namespace ZombieGame
             _bullets.Clear();
             _pickups.Clear();
             _waveManager = new WaveManager(_zombies, _map, _player, _enemyProj);
-            SpawnPickups();
+
             _state = GameState.Playing;
         }
 
