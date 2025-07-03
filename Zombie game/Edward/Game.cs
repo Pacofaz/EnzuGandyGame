@@ -455,6 +455,8 @@ namespace ZombieGame
                 _lastMousePos = e.Location;
         }
 
+
+
         /// <summary>
         /// Projektil (Bullet) abfeuern in Richtung Mausposition.
         /// </summary>

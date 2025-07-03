@@ -38,7 +38,7 @@ namespace ZombieGame.Utils
             // Datei öffnen
             Exec($"open \"{filePath}\" type mpegvideo alias {Alias}");
 
-            Exec($"setaudio {Alias} volume to 500");
+            Exec($"setaudio {Alias} volume to 100");
 
             // Abspielen (mit optionalem Repeat)
             if (loop)

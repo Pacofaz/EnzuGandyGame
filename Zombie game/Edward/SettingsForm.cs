@@ -1,5 +1,4 @@
-﻿// SettingsForm.cs
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -11,14 +10,12 @@ namespace ZombieGame
         private Button btnOk;
         private Button btnCancel;
 
-        /// <summary>
-        /// Vor dem Aufruf von ShowDialog setzen, danach hier abfragen.
-        /// </summary>
         public bool FullscreenEnabled { get; set; }
 
         public SettingsForm()
         {
             InitializeComponent();
+            this.MinimumSize = new Size(440, 250);
         }
 
         private void InitializeComponent()
@@ -26,7 +23,7 @@ namespace ZombieGame
             Text = "Einstellungen";
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
-            ClientSize = new Size(300, 150);
+            ClientSize = new Size(480, 250);
             MaximizeBox = false;
             MinimizeBox = false;
             KeyPreview = true;
@@ -35,7 +32,8 @@ namespace ZombieGame
             {
                 Text = "Vollbildmodus",
                 AutoSize = true,
-                Location = new Point(20, 20)
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(32, 36)
             };
             Controls.Add(chkFullscreen);
 
@@ -43,8 +41,8 @@ namespace ZombieGame
             {
                 Text = "OK",
                 DialogResult = DialogResult.OK,
-                Location = new Point(50, 80),
-                Size = new Size(80, 30)
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Size = new Size(140, 50),
             };
             Controls.Add(btnOk);
 
@@ -52,18 +50,28 @@ namespace ZombieGame
             {
                 Text = "Abbrechen",
                 DialogResult = DialogResult.Cancel,
-                Location = new Point(160, 80),
-                Size = new Size(80, 30)
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Size = new Size(140, 50),
             };
             Controls.Add(btnCancel);
+
+            this.Resize += (s, e) => LayoutButtons();
+            LayoutButtons();
 
             Load += SettingsForm_Load;
             KeyDown += SettingsForm_KeyDown;
         }
 
+        private void LayoutButtons()
+        {
+            int spacing = 40;
+            int y = ClientSize.Height - btnOk.Height - 40;
+            btnOk.Location = new Point((ClientSize.Width - btnOk.Width * 2 - spacing) / 2, y);
+            btnCancel.Location = new Point(btnOk.Right + spacing, y);
+        }
+
         private void SettingsForm_Load(object sender, EventArgs e)
         {
-            // Initialzustand übernehmen
             chkFullscreen.Checked = FullscreenEnabled;
         }
 
@@ -71,6 +79,12 @@ namespace ZombieGame
         {
             if (e.KeyCode == Keys.Escape)
                 DialogResult = DialogResult.Cancel;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            FullscreenEnabled = chkFullscreen.Checked;
+            base.OnFormClosing(e);
         }
     }
 }

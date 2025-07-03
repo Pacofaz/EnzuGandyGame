@@ -1,5 +1,4 @@
-﻿// Utils/UI.cs
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -10,10 +9,16 @@ using ZombieGame.Managers;
 
 namespace ZombieGame.Utils
 {
+    /// <summary>
+    /// Statische Klasse für das komplette UI-Rendering (Healthbar, Welle, Hotbar, Minimap, Pause, Inventar, etc.).
+    /// </summary>
     public static class UI
     {
         private static readonly Bitmap HealthBarOutlineImage;
 
+        /// <summary>
+        /// Lädt benötigte UI-Assets einmalig (z.B. Healthbar-Overlay).
+        /// </summary>
         static UI()
         {
             var path = Path.Combine(Application.StartupPath, "Assets", "healthbar_outline.png");
@@ -22,14 +27,18 @@ namespace ZombieGame.Utils
             HealthBarOutlineImage = new Bitmap(path);
         }
 
+        /// <summary>
+        /// Zentraler UI-Renderer für das Spiel: Healthbar, Runde, Wellen, Hotbar, Money, Minimap, uvm.
+        /// Werte und Positionen sind teilweise als Parameter steuerbar.
+        /// </summary>
         public static void DrawGame(
             Graphics g,
             Player p,
             WaveManager w,
             Size screen,
-            // Healthbar
+            // Healthbar-Position und Größe
             int barX = 100, int barY = 75, int barWidth = 210, int barHeight = 30,
-            // Outline
+            // Outline-Overlay
             int outlineWidth = 350, int outlineHeight = 180, int outlineOffsetX = -42, int outlineOffsetY = -12,
             // Weapon icon
             int weaponX = 20, int weaponIconSize = 40, int weaponYOffset = 70,
@@ -37,14 +46,15 @@ namespace ZombieGame.Utils
             int minimapSize = 150, int minimapOffsetRight = 20, int minimapOffsetTop = 20
         )
         {
-            // High-Quality
+            // --- Healthbar ---
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-            // 1) Healthbar
             g.FillRectangle(Brushes.Gray, barX, barY, barWidth, barHeight);
             g.FillRectangle(Brushes.Lime, barX, barY, 2 * p.Health, barHeight);
+
+            // Healthbar-Text mit Outline
             using (var fH = new Font("Segoe Print", 16, FontStyle.Regular))
             {
                 string txt = $"{p.Health}/100";
@@ -58,11 +68,12 @@ namespace ZombieGame.Utils
                     g.FillPath(Brushes.White, path);
                 }
             }
+            // Healthbar-Overlay
             int ox = barX + (barWidth - outlineWidth) / 2 + outlineOffsetX;
             int oy = barY - ((outlineHeight - barHeight) / 2) + outlineOffsetY;
             g.DrawImage(HealthBarOutlineImage, ox, oy, outlineWidth, outlineHeight);
 
-            // 2) Wave + Alive
+            // --- Wave-Info, Alive-Counter, Countdown ---
             using (var fW = new Font("Segoe Print", 28, FontStyle.Regular))
             {
                 float em = fW.Size * g.DpiY / 72f;
@@ -103,13 +114,13 @@ namespace ZombieGame.Utils
                 }
             }
 
-            // 3) Weapon-Icon
+            // --- Aktuelle Waffenanzeige (links unten, simple Nummer + gelber Kasten) ---
             int wY = screen.Height - weaponYOffset;
             g.FillRectangle(Brushes.Yellow, weaponX, wY, weaponIconSize, weaponIconSize);
             using (var fw = new Font("Segoe Print", 16, FontStyle.Regular))
                 g.DrawString((p.GetCurrentWeaponIndex() + 1).ToString(), fw, Brushes.Black, weaponX + weaponIconSize / 4, wY + 2);
 
-            // 4) Hotbar (5 Slots)
+            // --- Hotbar mit bis zu 5 Slots und Inventar ---
             var inv = p.GetInventory();
             int slots = 5, ss = 50, sp = 10;
             int totW = slots * ss + (slots - 1) * sp;
@@ -132,7 +143,7 @@ namespace ZombieGame.Utils
                 }
             }
 
-            // 5) Minimap
+            // --- Minimap (rechts oben) mit Spieler & Zombies ---
             int mX = screen.Width - minimapSize - minimapOffsetRight;
             int mY = minimapOffsetTop;
             g.FillRectangle(Brushes.Black, mX, mY, minimapSize, minimapSize);
@@ -142,7 +153,7 @@ namespace ZombieGame.Utils
             foreach (var z in w.Zombies)
                 g.FillEllipse(Brushes.Red, mX + z.Position.X * scX - 2, mY + z.Position.Y * scY - 2, 4, 4);
 
-            // 6) Money unter der Minimap mit Outline
+            // --- Money unter Minimap mit Outline ---
             int moneyX = mX;
             int moneyY = minimapOffsetTop + minimapSize + 8;
             using (var fm = new Font("Segoe Print", 16, FontStyle.Regular))
@@ -160,6 +171,9 @@ namespace ZombieGame.Utils
             }
         }
 
+        /// <summary>
+        /// Zeichnet den Pause-Bildschirm (dunkles Overlay + „PAUSED“).
+        /// </summary>
         public static void DrawPause(Graphics g, Size screen)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -174,6 +188,9 @@ namespace ZombieGame.Utils
             }
         }
 
+        /// <summary>
+        /// Zeichnet das Inventar (zentriertes Overlay mit Waffen/Items).
+        /// </summary>
         public static void DrawInventory(Graphics g, Player p, Size screen)
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;

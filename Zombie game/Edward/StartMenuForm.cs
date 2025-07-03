@@ -7,8 +7,15 @@ using System.Windows.Forms;
 
 namespace ZombieGame
 {
+    /// <summary>
+    /// Startmenü-Form für das ZombieGame.
+    /// Bietet zwei große, eckige, rote Buttons (Settings und Start Game),
+    /// die rechts unten untereinander angeordnet sind und auf Hover reagieren.
+    /// Im Fenstermodus und im Vollbild immer responsive und düster gestylt.
+    /// </summary>
     public class StartMenuForm : Form
     {
+        // --- Assets und UI-State ---
         private Bitmap backgroundImage;
         private Rectangle startButtonBounds;
         private Rectangle settingsButtonBounds;
@@ -16,16 +23,20 @@ namespace ZombieGame
         private bool isHoverSettings;
 
         private PrivateFontCollection fonts = new PrivateFontCollection();
-        private Font buttonFont;
+        private Font buttonFontLarge;
+        private Font buttonFontSmall;
 
-        private const int BUTTON_WIDTH = 240;
-        private const int BUTTON_HEIGHT = 72;
-        private const int BUTTON_OFFSET_Y = 460;
-        private const int BUTTON_GAP = 24;
-        private const int BUTTON_RADIUS = 16;
-        private readonly Color goldTop = Color.FromArgb(255, 224, 180, 20);
-        private readonly Color goldBottom = Color.FromArgb(255, 160, 120, 0);
+        // --- Button-Design ---
+        private const int BUTTON_WIDTH = 400;
+        private const int BUTTON_HEIGHT = 120;
+        private const int BUTTON_GAP = 50;
+        private readonly Color redDark = Color.FromArgb(220, 40, 10, 10);
+        private readonly Color redHover = Color.FromArgb(220, 90, 20, 20);
+        private readonly Color redBorder = Color.FromArgb(255, 160, 30, 30);
 
+        /// <summary>
+        /// Konstruktor: Initialisiert das Menü als Vollbild, lädt Assets und setzt Events.
+        /// </summary>
         public StartMenuForm()
         {
             DoubleBuffered = true;
@@ -43,6 +54,9 @@ namespace ZombieGame
             PositionButtons();
         }
 
+        /// <summary>
+        /// Nach dem Anzeigen werden die Buttons korrekt positioniert und neu gezeichnet.
+        /// </summary>
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
@@ -50,24 +64,35 @@ namespace ZombieGame
             Invalidate();
         }
 
+        /// <summary>
+        /// Lädt das Hintergrundbild und die Schriften aus den Assets.
+        /// </summary>
         private void LoadAssets()
         {
             string baseDir = Application.StartupPath;
             backgroundImage = (Bitmap)Image.FromFile(Path.Combine(baseDir, "assets", "fullscreen.png"));
-
             fonts.AddFontFile(Path.Combine(baseDir, "assets", "ZombieApocalypse8bit.ttf"));
-            buttonFont = new Font(fonts.Families[0], 28, FontStyle.Bold);
+            buttonFontLarge = new Font(fonts.Families[0], 35, FontStyle.Bold); // Start Game
+            buttonFontSmall = new Font(fonts.Families[0], 30, FontStyle.Bold); // Settings
         }
 
+        /// <summary>
+        /// Positioniert die Buttons rechts unten, untereinander und immer sichtbar,
+        /// unabhängig von der Fenstergröße.
+        /// </summary>
         private void PositionButtons()
         {
-            int cx = (ClientSize.Width - BUTTON_WIDTH) / 2;
-            int cy = (ClientSize.Height - BUTTON_HEIGHT) / 2 + BUTTON_OFFSET_Y;
+            int totalHeight = BUTTON_HEIGHT * 2 + BUTTON_GAP;
+            int cx = ClientSize.Width - BUTTON_WIDTH - 80;
+            int cy = ClientSize.Height - totalHeight - 100;
 
-            startButtonBounds = new Rectangle(cx, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
-            settingsButtonBounds = new Rectangle(cx - BUTTON_WIDTH - BUTTON_GAP, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
+            settingsButtonBounds = new Rectangle(cx, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
+            startButtonBounds = new Rectangle(cx, cy + BUTTON_HEIGHT + BUTTON_GAP, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
 
+        /// <summary>
+        /// Malt das Hintergrundbild und beide Buttons.
+        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
@@ -76,64 +101,46 @@ namespace ZombieGame
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.CompositingQuality = CompositingQuality.HighQuality;
 
-            // Hintergrund
             g.DrawImage(backgroundImage, 0, 0, Width, Height);
-
-            // Buttons
-            DrawButton(g, settingsButtonBounds, "SETTINGS", isHoverSettings);
-            DrawButton(g, startButtonBounds, "START GAME", isHoverStart);
+            DrawButton(g, settingsButtonBounds, "SETTINGS", isHoverSettings, isSettings: true);
+            DrawButton(g, startButtonBounds, "START GAME", isHoverStart, isSettings: false);
         }
 
-        private void DrawButton(Graphics g, Rectangle rect, string text, bool hover)
+        /// <summary>
+        /// Zeichnet einen eckigen, roten Button mit Schatten, Rand und angepasster Schriftgröße.
+        /// </summary>
+        /// <param name="g">Grafikobjekt</param>
+        /// <param name="rect">Button-Bereich</param>
+        /// <param name="text">Button-Text</param>
+        /// <param name="hover">Hover-State</param>
+        /// <param name="isSettings">Ob der Button der Settings-Button ist (kleinere Schrift)</param>
+        private void DrawButton(Graphics g, Rectangle rect, string text, bool hover, bool isSettings)
         {
-            // 1) Schatten
-            var shadowRect = new Rectangle(rect.X + 4, rect.Y + 4, rect.Width, rect.Height);
-            using (var shadowB = new SolidBrush(Color.FromArgb(120, 0, 0, 0)))
-                g.FillPath(shadowB, RoundedRect(shadowRect, BUTTON_RADIUS));
+            var shadowRect = new Rectangle(rect.X + 7, rect.Y + 7, rect.Width, rect.Height);
+            using (var shadowB = new SolidBrush(Color.FromArgb(110, 10, 0, 0)))
+                g.FillRectangle(shadowB, shadowRect);
 
-            // 2) Goldener Verlauf + Kontur
-            using (var path = RoundedRect(rect, BUTTON_RADIUS))
-            using (var fill = new LinearGradientBrush(rect, goldTop, goldBottom, LinearGradientMode.Vertical))
-            {
-                if (hover)
-                    fill.SetSigmaBellShape(0.6f);
+            using (var fill = new SolidBrush(hover ? redHover : redDark))
+                g.FillRectangle(fill, rect);
 
-                g.FillPath(fill, path);
-                using (var darkPen = new Pen(Color.FromArgb(200, 50, 30, 0), 4) { LineJoin = LineJoin.Round })
-                    g.DrawPath(darkPen, path);
-                using (var lightPen = new Pen(Color.FromArgb(200, 255, 240, 180), 2) { LineJoin = LineJoin.Round })
-                    g.DrawPath(lightPen, path);
-            }
+            using (var border = new Pen(redBorder, 6))
+                g.DrawRectangle(border, rect);
 
-            // 3) Text mit Schatten und weißer Schrift
-            var sf = new StringFormat
-            {
-                Alignment = StringAlignment.Center,
-                LineAlignment = StringAlignment.Center
-            };
+            var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            Rectangle textRect = new Rectangle(rect.X, rect.Y + 2, rect.Width, rect.Height);
 
-            // Text Schatten
-            var ts = new Rectangle(rect.X + 2, rect.Y + 2, rect.Width, rect.Height);
-            using (var tb = new SolidBrush(Color.FromArgb(100, 0, 0, 0)))
-                g.DrawString(text, buttonFont, tb, ts, sf);
+            Font font = isSettings ? buttonFontSmall : buttonFontLarge;
 
-            // Weißer Text
-            g.DrawString(text, buttonFont, Brushes.White, rect, sf);
+            using (var darkText = new SolidBrush(Color.FromArgb(180, 0, 0, 0)))
+                g.DrawString(text, font, darkText, new Rectangle(rect.X, rect.Y + 5, rect.Width, rect.Height), sf);
+
+            using (var txtBrush = new SolidBrush(Color.White))
+                g.DrawString(text, font, txtBrush, textRect, sf);
         }
 
-        private GraphicsPath RoundedRect(Rectangle bounds, int radius)
-        {
-            int d = radius * 2;
-            var path = new GraphicsPath();
-            path.StartFigure();
-            path.AddArc(bounds.Left, bounds.Top, d, d, 180, 90);
-            path.AddArc(bounds.Right - d, bounds.Top, d, d, 270, 90);
-            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
-            path.AddArc(bounds.Left, bounds.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-
+        /// <summary>
+        /// Aktualisiert den Hover-Status beider Buttons und sorgt für visuelles Feedback.
+        /// </summary>
         private void UpdateHover(Point mouse)
         {
             bool overStart = startButtonBounds.Contains(mouse);
@@ -147,6 +154,9 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Klick-Handler für beide Buttons: Startet das Spiel oder öffnet das Settings-Form.
+        /// </summary>
         private void OnMouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -167,6 +177,10 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Schaltet zwischen Vollbild und großem Fenstermodus um,
+        /// passt Fenstergröße und Position an und sorgt für korrekte Darstellung.
+        /// </summary>
         private void ApplySettings(bool fullscreen)
         {
             if (fullscreen)
@@ -177,30 +191,26 @@ namespace ZombieGame
             }
             else
             {
+                var screen = Screen.FromControl(this).WorkingArea;
+                int width = (int)(screen.Width * 0.8);
+                int height = (int)(screen.Height * 0.8);
+                MinimumSize = new Size(900, 600);
+
                 FormBorderStyle = FormBorderStyle.Sizable;
                 WindowState = FormWindowState.Normal;
                 TopMost = false;
+                Size = new Size(Math.Max(width, MinimumSize.Width), Math.Max(height, MinimumSize.Height));
+                Location = new Point(
+                    screen.Left + (screen.Width - Width) / 2,
+                    screen.Top + (screen.Height - Height) / 2
+                );
             }
             PositionButtons();
             Invalidate();
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // StartMenuForm
-            // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "StartMenuForm";
-            this.Load += new System.EventHandler(this.StartMenuForm_Load);
-            this.ResumeLayout(false);
-
-        }
-
-        private void StartMenuForm_Load(object sender, EventArgs e)
-        {
-
-        }
+        // Unbenutzter Designer-Code
+        private void InitializeComponent() { }
+        private void StartMenuForm_Load(object sender, EventArgs e) { }
     }
 }
