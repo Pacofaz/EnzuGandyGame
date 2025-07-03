@@ -13,3 +13,12 @@ Projektgruppe: Enzu Games
 
 Fazit:
 Nach drei intensiven Wochen ist das Gesamtprojekt abgeschlossen. Sowohl das Match-3-Spiel als auch das Zombie-Game laufen stabil und können über den Launcher gestartet werden. Alle Ressourcen und Dokumente sind im Repository abgelegt.
+
+Aufgaben der Woche:
+- Leon: Level 4 abgeschlossen und den Launcher programmiert.
+- Selcuk: Soundeffekte eingebunden und letzten Code aufgeräumt.
+- Edward: Weitere Gegnertypen umgesetzt und das Balancing verbessert.
+
+Aufgetretene Probleme und Lösungen:
+- Beim Zusammenführen der beiden Spiele im Launcher gab es anfangs Pfadprobleme. Durch die Verwendung relativer Pfade und Tests auf mehreren Rechnern konnten wir den Fehler beseitigen.
+- In Level 4 traten spät noch einige Bugs auf. Nach einer gemeinsamen Debugging-Session funktionierten Punkteberechnung und Animationen wieder korrekt.
