@@ -18,3 +18,12 @@ Verbessertes UI: Das User Interface wurde überarbeitet und verbessert, um die B
 Fazit:
 Wir konnten diese Woche in beiden Projekten große Fortschritte erzielen und profitieren von der Zusammenarbeit in der erweiterten Gruppe. Die nächsten Schritte sind weitere Verbesserungen an den Spielelementen und das Testen der neuen Features.
 
+
+Aufgaben der Woche:
+- Leon: Hauptmenü für das Match-3-Spiel programmiert.
+- Selcuk: Shop-Form im Zombie-Spiel erstellt und Repository-Struktur angepasst.
+- Edward: Neuen Gegnertyp eingebaut und das UI weiterentwickelt.
+
+Aufgetretene Probleme und Lösungen:
+- Beim Einbinden des Zombie-Spiels traten Versionskonflikte in Visual Studio auf. Nach Bereinigung der Projektdateien ließen sich beide Lösungen gemeinsam kompilieren.
+- Die Skalierung des Shop-Menüs war zunächst fehlerhaft. Durch einheitliche Panel-Größen und Tests auf verschiedenen Auflösungen wurde das Problem behoben.
