@@ -7,6 +7,9 @@ using ZombieGame.Utils;
 
 namespace ZombieGame.Managers
 {
+    /// <summary>
+    /// Verwalter für Gegnerwellen (Runden): Spawnt Zombies (inkl. Fernkampf), zählt Kills, regelt Pausen und Übergänge.
+    /// </summary>
     public class WaveManager
     {
         private readonly List<Zombie> _zombies;
@@ -14,6 +17,7 @@ namespace ZombieGame.Managers
         private readonly Player _player;
         private readonly Random _rnd = new Random();
 
+        // Wellen-Infos und öffentliche Properties für UI
         public int Round { get; private set; }
         public int TotalZombiesThisWave => Round * 10;
         public int AliveZombies => _zombies.Count;
@@ -23,36 +27,41 @@ namespace ZombieGame.Managers
         private int _toSpawn;
         private int _kills;
 
+        // Delay/Timing-Felder für Spawn- und Pausenlogik
         private int _initialDelayCounter;
         private bool _initialDelayDone;
-
         private int _spawnIntervalCounter;
-        private const int SpawnIntervalFrames = 10;  // alle ~0.17s ein Zombie
-
+        private const int SpawnIntervalFrames = 10;
         private int _nextWaveDelayCounter;
         private bool _nextWaveScheduled;
-        private readonly List<Projectile> _projectiles; // <-- NEU!
+        private readonly List<Projectile> _projectiles; // Für Range-Zombies
 
+        // Zeitkonstanten (Frames @ 60FPS)
+        private const int InitialDelayFrames = 60 * 1;
+        private const int NextWaveDelayFrames = 60 * 5;
 
-        private const int InitialDelayFrames = 60 * 1;   // 5s @60FPS
-        private const int NextWaveDelayFrames = 60 * 5;  // 10s @60FPS
-
+        // Für das UI: Status und Restzeit bis nächste Welle
         public bool NextWaveScheduled => _nextWaveScheduled;
         public float NextWaveTimeRemaining =>
             !_nextWaveScheduled
                 ? 0f
                 : (NextWaveDelayFrames - _nextWaveDelayCounter) / 60f;
 
-
+        /// <summary>
+        /// Konstruktor: bekommt Listen, Map, Player und Projektil-Referenz.
+        /// </summary>
         public WaveManager(List<Zombie> zombies, Map map, Player player, List<Projectile> projectiles)
         {
             _zombies = zombies;
             _map = map;
             _player = player;
-            _projectiles = projectiles; // NEU!
+            _projectiles = projectiles;
             StartNextWave();
         }
 
+        /// <summary>
+        /// Startet eine neue Welle: zählt hoch, setzt Spawnzähler und Resets.
+        /// </summary>
         private void StartNextWave()
         {
             Round++;
@@ -65,9 +74,12 @@ namespace ZombieGame.Managers
             _nextWaveScheduled = false;
         }
 
+        /// <summary>
+        /// Hauptupdate: Spawnt Zombies, regelt Delays, prüft auf Rundenende und triggert neue Welle.
+        /// </summary>
         public void Update()
         {
-            // 1) Tote entfernen und zählen
+            // Tote entfernen und Kills zählen
             for (int i = _zombies.Count - 1; i >= 0; i--)
             {
                 if (_zombies[i].IsDead)
@@ -77,7 +89,7 @@ namespace ZombieGame.Managers
                 }
             }
 
-            // 2) Initial-Delay vor erstem Spawn
+            // Initialer Delay vor Wellenbeginn
             if (!_initialDelayDone)
             {
                 if (_initialDelayCounter < InitialDelayFrames)
@@ -86,7 +98,7 @@ namespace ZombieGame.Managers
                     _initialDelayDone = true;
             }
 
-            // 3) kontinuierliches Spawnen
+            // Zombies kontinuierlich spawnen
             if (_initialDelayDone && _toSpawn > 0)
             {
                 if (_spawnIntervalCounter < SpawnIntervalFrames)
@@ -99,7 +111,7 @@ namespace ZombieGame.Managers
                 }
             }
 
-            // 4) Nach Wellenende: Next-Wave-Delay
+            // Wenn alles tot und gespawnt: Nächste Welle planen nach Delay
             if (_toSpawn <= 0 && _zombies.Count == 0)
             {
                 if (!_nextWaveScheduled)
@@ -111,6 +123,10 @@ namespace ZombieGame.Managers
             }
         }
 
+        /// <summary>
+        /// Spawnt einen Zombie am Kartenrand (25% Chance Range-Zombie, Rest Nahkampf).
+        /// Platziert Gegner nie direkt auf Spieler.
+        /// </summary>
         private void SpawnOne()
         {
             var size = new SizeF(28, 28);
@@ -133,12 +149,10 @@ namespace ZombieGame.Managers
             }
             while (rect.IntersectsWith(new RectangleF(_player.Position, _player.Size)));
 
-            // NEU: 25% Chance für Range-Zombie, Rest normale Zombies
             if (_rnd.NextDouble() < 0.25)
                 _zombies.Add(new ZombieRange(pos, _player, _projectiles));
             else
                 _zombies.Add(new Zombie(pos, _player));
         }
-
     }
 }

@@ -1,232 +1,216 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ZombieGame
 {
+    /// <summary>
+    /// Startmenü-Form für das ZombieGame.
+    /// Bietet zwei große, eckige, rote Buttons (Settings und Start Game),
+    /// die rechts unten untereinander angeordnet sind und auf Hover reagieren.
+    /// Im Fenstermodus und im Vollbild immer responsive und düster gestylt.
+    /// </summary>
     public class StartMenuForm : Form
     {
-        // Ressourcen
+        // --- Assets und UI-State ---
         private Bitmap backgroundImage;
-        private List<Zombie> zombieList;
+        private Rectangle startButtonBounds;
+        private Rectangle settingsButtonBounds;
+        private bool isHoverStart;
+        private bool isHoverSettings;
+
         private PrivateFontCollection fonts = new PrivateFontCollection();
-        private Font titleFont, subtitleFont, buttonFont, smallFont;
+        private Font buttonFontLarge;
+        private Font buttonFontSmall;
 
-        // Menü
-        private string[] mainMenuItems = { "New Game", "Continue", "Settings", "Credits", "Exit" };
-        private Rectangle[] mainMenuItemBounds;
-        private int hoveredMainIndex = -1;
-        private bool inSettings, inCredits;
+        // --- Button-Design ---
+        private const int BUTTON_WIDTH = 400;
+        private const int BUTTON_HEIGHT = 120;
+        private const int BUTTON_GAP = 50;
+        private readonly Color redDark = Color.FromArgb(220, 40, 10, 10);
+        private readonly Color redHover = Color.FromArgb(220, 90, 20, 20);
+        private readonly Color redBorder = Color.FromArgb(255, 160, 30, 30);
 
-        private Timer animationTimer;
-
+        /// <summary>
+        /// Konstruktor: Initialisiert das Menü als Vollbild, lädt Assets und setzt Events.
+        /// </summary>
         public StartMenuForm()
         {
-            InitializeForm();
-            LoadAssets();
-            InitializeZombies();
-            CalculateMenuLayout();
-            SetupTimers();
-        }
-
-        private void InitializeForm()
-        {
+            DoubleBuffered = true;
+            KeyPreview = true;
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             TopMost = true;
-            DoubleBuffered = true;
-            KeyDown += StartMenuForm_KeyDown;
-            MouseMove += StartMenuForm_MouseMove;
-            MouseClick += StartMenuForm_MouseClick;
+
+            MouseMove += (s, e) => UpdateHover(e.Location);
+            MouseClick += OnMouseClick;
+            KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) DialogResult = DialogResult.Cancel; };
+            Resize += (s, e) => { PositionButtons(); Invalidate(); };
+
+            LoadAssets();
+            PositionButtons();
         }
 
+        /// <summary>
+        /// Nach dem Anzeigen werden die Buttons korrekt positioniert und neu gezeichnet.
+        /// </summary>
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            PositionButtons();
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Lädt das Hintergrundbild und die Schriften aus den Assets.
+        /// </summary>
         private void LoadAssets()
         {
             string baseDir = Application.StartupPath;
-            backgroundImage = (Bitmap)Image.FromFile(System.IO.Path.Combine(baseDir, "assets", "bg_zombie_fullscreen.png"));
-            fonts.AddFontFile(System.IO.Path.Combine(baseDir, "assets", "ZombieApocalypse8bit.ttf"));
-            titleFont = new Font(fonts.Families[0], 50, FontStyle.Bold);
-            subtitleFont = new Font(fonts.Families[0], 48, FontStyle.Regular);
-            buttonFont = new Font(fonts.Families[0], 20, FontStyle.Regular);
-            smallFont = new Font(fonts.Families[0], 24, FontStyle.Regular);
+            backgroundImage = (Bitmap)Image.FromFile(Path.Combine(baseDir, "assets", "fullscreen.png"));
+            fonts.AddFontFile(Path.Combine(baseDir, "assets", "ZombieApocalypse8bit.ttf"));
+            buttonFontLarge = new Font(fonts.Families[0], 35, FontStyle.Bold); // Start Game
+            buttonFontSmall = new Font(fonts.Families[0], 30, FontStyle.Bold); // Settings
         }
 
-        private void InitializeZombies()
+        /// <summary>
+        /// Positioniert die Buttons rechts unten, untereinander und immer sichtbar,
+        /// unabhängig von der Fenstergröße.
+        /// </summary>
+        private void PositionButtons()
         {
-            zombieList = new List<Zombie>();
-            var rnd = new Random();
-            int w = Screen.PrimaryScreen.Bounds.Width;
-            int h = Screen.PrimaryScreen.Bounds.Height;
-            for (int i = 0; i < 10; i++)
-                zombieList.Add(new Zombie
-                {
-                    Position = new PointF(rnd.Next(w), rnd.Next(h / 2, h)),
-                    Frame = 0,
-                    FrameCount = 4,
-                    FrameWidth = 64,
-                    FrameHeight = 64
-                });
+            int totalHeight = BUTTON_HEIGHT * 2 + BUTTON_GAP;
+            int cx = ClientSize.Width - BUTTON_WIDTH - 80;
+            int cy = ClientSize.Height - totalHeight - 100;
+
+            settingsButtonBounds = new Rectangle(cx, cy, BUTTON_WIDTH, BUTTON_HEIGHT);
+            startButtonBounds = new Rectangle(cx, cy + BUTTON_HEIGHT + BUTTON_GAP, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
 
-        private void CalculateMenuLayout()
-        {
-            int sw = Screen.PrimaryScreen.Bounds.Width;
-            int sh = Screen.PrimaryScreen.Bounds.Height;
-            int btnW = 300, btnH = 50, gap = 20;
-            int startY = (sh / 2) - ((mainMenuItems.Length * (btnH + gap)) / 2);
-            mainMenuItemBounds = new Rectangle[mainMenuItems.Length];
-            for (int i = 0; i < mainMenuItems.Length; i++)
-                mainMenuItemBounds[i] = new Rectangle((sw - btnW) / 2, startY + i * (btnH + gap), btnW, btnH);
-        }
-
-        private void SetupTimers()
-        {
-            animationTimer = new Timer { Interval = 200 };
-            animationTimer.Tick += (s, e) => {
-                // Animation der Zombies
-                for (int i = 0; i < zombieList.Count; i++)
-                {
-                    var z = zombieList[i];
-                    z.Frame = (z.Frame + 1) % z.FrameCount;
-                    zombieList[i] = z;
-                }
-                Invalidate();
-            };
-            animationTimer.Start();
-        }
-
+        /// <summary>
+        /// Malt das Hintergrundbild und beide Buttons.
+        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            SetRenderingHints(g);
-            g.DrawImage(backgroundImage, 0, 0, Width, Height);
-            DrawTitle(g);
-            if (inSettings) DrawSettingsMenu(g);
-            else if (inCredits) DrawCreditsScreen(g);
-            else DrawMainMenu(g);
-
-        }
-
-        private void SetRenderingHints(Graphics g)
-        {
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.InterpolationMode = InterpolationMode.NearestNeighbor;
-            g.PixelOffsetMode = PixelOffsetMode.Half;
-            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            g.InterpolationMode = InterpolationMode.NearestNeighbor;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+
+            g.DrawImage(backgroundImage, 0, 0, Width, Height);
+            DrawButton(g, settingsButtonBounds, "SETTINGS", isHoverSettings, isSettings: true);
+            DrawButton(g, startButtonBounds, "START GAME", isHoverStart, isSettings: false);
         }
 
-        private void DrawTitle(Graphics g)
+        /// <summary>
+        /// Zeichnet einen eckigen, roten Button mit Schatten, Rand und angepasster Schriftgröße.
+        /// </summary>
+        /// <param name="g">Grafikobjekt</param>
+        /// <param name="rect">Button-Bereich</param>
+        /// <param name="text">Button-Text</param>
+        /// <param name="hover">Hover-State</param>
+        /// <param name="isSettings">Ob der Button der Settings-Button ist (kleinere Schrift)</param>
+        private void DrawButton(Graphics g, Rectangle rect, string text, bool hover, bool isSettings)
         {
-            const string title = "ZOMBIE APOCALYPSE";
-            var ts = g.MeasureString(title, titleFont);
-            float x = (Width - ts.Width) / 2, y = 50;
-            g.DrawString(title, titleFont, Brushes.Black, x + 8, y + 8);
-            using (var lg = new LinearGradientBrush(new PointF(x, y), new PointF(x + ts.Width, y), Color.Red, Color.DarkRed))
-                g.DrawString(title, titleFont, lg, x, y);
+            var shadowRect = new Rectangle(rect.X + 7, rect.Y + 7, rect.Width, rect.Height);
+            using (var shadowB = new SolidBrush(Color.FromArgb(110, 10, 0, 0)))
+                g.FillRectangle(shadowB, shadowRect);
+
+            using (var fill = new SolidBrush(hover ? redHover : redDark))
+                g.FillRectangle(fill, rect);
+
+            using (var border = new Pen(redBorder, 6))
+                g.DrawRectangle(border, rect);
+
+            var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            Rectangle textRect = new Rectangle(rect.X, rect.Y + 2, rect.Width, rect.Height);
+
+            Font font = isSettings ? buttonFontSmall : buttonFontLarge;
+
+            using (var darkText = new SolidBrush(Color.FromArgb(180, 0, 0, 0)))
+                g.DrawString(text, font, darkText, new Rectangle(rect.X, rect.Y + 5, rect.Width, rect.Height), sf);
+
+            using (var txtBrush = new SolidBrush(Color.White))
+                g.DrawString(text, font, txtBrush, textRect, sf);
         }
 
-        private void DrawMainMenu(Graphics g)
+        /// <summary>
+        /// Aktualisiert den Hover-Status beider Buttons und sorgt für visuelles Feedback.
+        /// </summary>
+        private void UpdateHover(Point mouse)
         {
-            for (int i = 0; i < mainMenuItems.Length; i++)
-                DrawButton(g, mainMenuItemBounds[i], mainMenuItems[i], hoveredMainIndex == i);
-        }
-
-        private void DrawSettingsMenu(Graphics g)
-        {
-            const string subtitle = "Settings";
-            var ss = g.MeasureString(subtitle, subtitleFont);
-            float sx = (Width - ss.Width) / 2, sy = 100;
-            g.DrawString(subtitle, subtitleFont, Brushes.White, sx, sy);
-        }
-
-        private void DrawCreditsScreen(Graphics g)
-        {
-            const string credits = "Developed by:\n- Team Alpha\n- Graphics by Beta Studios\n- Music by Gamma Beats";
-            g.DrawString(credits, smallFont, Brushes.LightGray, 100, 200);
-        }
-
-        private void DrawButton(Graphics g, Rectangle r, string text, bool hover)
-        {
-            using (var path = new GraphicsPath())
+            bool overStart = startButtonBounds.Contains(mouse);
+            bool overSettings = settingsButtonBounds.Contains(mouse);
+            if (overStart != isHoverStart || overSettings != isHoverSettings)
             {
-                path.AddRectangle(r);
-                using (var pgb = new PathGradientBrush(path))
+                isHoverStart = overStart;
+                isHoverSettings = overSettings;
+                Invalidate(startButtonBounds);
+                Invalidate(settingsButtonBounds);
+            }
+        }
+
+        /// <summary>
+        /// Klick-Handler für beide Buttons: Startet das Spiel oder öffnet das Settings-Form.
+        /// </summary>
+        private void OnMouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+
+            if (startButtonBounds.Contains(e.Location))
+            {
+                DialogResult = DialogResult.OK;
+            }
+            else if (settingsButtonBounds.Contains(e.Location))
+            {
+                using (var settings = new SettingsForm())
                 {
-                    pgb.CenterColor = hover ? Color.DarkRed : Color.FromArgb(200, 50, 0, 0);
-                    pgb.SurroundColors = new[] { Color.Black };
-                    g.FillPath(pgb, path);
+                    settings.FullscreenEnabled =
+                        (WindowState == FormWindowState.Maximized && FormBorderStyle == FormBorderStyle.None);
+                    if (settings.ShowDialog(this) == DialogResult.OK)
+                        ApplySettings(settings.FullscreenEnabled);
                 }
             }
-            using (var pen = new Pen(Color.White, 4))
-                g.DrawRectangle(pen, r);
-            var ts = g.MeasureString(text, buttonFont);
-            float tx = (r.X + (r.Width - ts.Width) / 2), ty = (r.Y + (r.Height - ts.Height) / 2);
-            g.DrawString(text, buttonFont, Brushes.Black, tx + 2, ty + 2);
-            g.DrawString(text, buttonFont, hover ? Brushes.Yellow : Brushes.White, tx, ty);
         }
 
-
-
-        private void InitializeComponent()
+        /// <summary>
+        /// Schaltet zwischen Vollbild und großem Fenstermodus um,
+        /// passt Fenstergröße und Position an und sorgt für korrekte Darstellung.
+        /// </summary>
+        private void ApplySettings(bool fullscreen)
         {
-            this.SuspendLayout();
-            // 
-            // StartMenuForm
-            // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "StartMenuForm";
-            this.Load += new System.EventHandler(this.StartMenuForm_Load);
-            this.ResumeLayout(false);
-
-        }
-
-        private void StartMenuForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void StartMenuForm_MouseMove(object s, MouseEventArgs e)
-        {
-            if (!inSettings && !inCredits)
+            if (fullscreen)
             {
-                int prev = hoveredMainIndex;
-                hoveredMainIndex = Array.FindIndex(mainMenuItemBounds, r => r.Contains(e.Location));
-                if (prev != hoveredMainIndex) Invalidate();
+                FormBorderStyle = FormBorderStyle.None;
+                WindowState = FormWindowState.Maximized;
+                TopMost = true;
             }
-        }
-
-        private void StartMenuForm_MouseClick(object s, MouseEventArgs e)
-        {
-            if (!inSettings && !inCredits)
+            else
             {
-                switch (hoveredMainIndex)
-                {
-                    case 0: DialogResult = DialogResult.OK; break;    // New Game
-                    case 1: DialogResult = DialogResult.OK; break;    // Continue
-                    case 2: inSettings = true; Invalidate(); break;
-                    case 3: inCredits = true; Invalidate(); break;
-                    case 4: DialogResult = DialogResult.Cancel; break;// Exit
-                }
+                var screen = Screen.FromControl(this).WorkingArea;
+                int width = (int)(screen.Width * 0.8);
+                int height = (int)(screen.Height * 0.8);
+                MinimumSize = new Size(900, 600);
+
+                FormBorderStyle = FormBorderStyle.Sizable;
+                WindowState = FormWindowState.Normal;
+                TopMost = false;
+                Size = new Size(Math.Max(width, MinimumSize.Width), Math.Max(height, MinimumSize.Height));
+                Location = new Point(
+                    screen.Left + (screen.Width - Width) / 2,
+                    screen.Top + (screen.Height - Height) / 2
+                );
             }
-            else { inSettings = inCredits = false; Invalidate(); }
+            PositionButtons();
+            Invalidate();
         }
 
-        private void StartMenuForm_KeyDown(object s, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-            {
-                if (inSettings || inCredits) { inSettings = inCredits = false; Invalidate(); }
-                else DialogResult = DialogResult.Cancel;
-            }
-        }
-
-        private struct Zombie
-        {
-            public PointF Position; public int Frame, FrameCount, FrameWidth, FrameHeight;
-        }
+        // Unbenutzter Designer-Code
+        private void InitializeComponent() { }
+        private void StartMenuForm_Load(object sender, EventArgs e) { }
     }
 }

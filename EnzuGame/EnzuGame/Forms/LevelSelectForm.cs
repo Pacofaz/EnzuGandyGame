@@ -84,7 +84,7 @@ namespace EnzuGame.Forms
                 GameSettings.LoadSettings();
                 backgroundImg = SafeLoad("Resources/levels/background.png");
 
-                int maxLevel = 4;
+                int maxLevel = 4; // Passe das an, wenn du mehr Level hast!
                 levelButtons.Clear();
                 for (int i = 1; i <= maxLevel; i++)
                 {
@@ -94,10 +94,13 @@ namespace EnzuGame.Forms
                     Image? clickedImg = SafeLoad($"{basePath}_clicked.png");
                     Image? lockedImg = (i == 1) ? null : SafeLoad($"{basePath}_locked.png");
 
+                    // Unlock-Logik für mehrere Level dynamisch erweitern:
                     Func<bool> unlocked = i switch
                     {
                         1 => () => true,
                         2 => () => GameSettings.Level2Unlocked,
+                        3 => () => GameSettings.Level3Unlocked,
+                        4 => () => GameSettings.Level4Unlocked,
                         _ => () => false
                     };
 
@@ -235,7 +238,9 @@ namespace EnzuGame.Forms
             {
                 1 => new Level1Form(),
                 2 => new Level2Form(),
-                // Add more levels as needed
+                3 => new level3Form(),
+                4 => new level4Form(),
+
                 _ => null
             };
 

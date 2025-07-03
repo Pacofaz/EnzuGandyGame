@@ -23,8 +23,9 @@ namespace EnzuGame.Klassen
 
         // --- Persistente Einstellungen (Property-Style für Serialization) ---
         public static bool Level2Unlocked { get; set; } = false;
+        public static bool Level3Unlocked { get; set; } = false;
+        public static bool Level4Unlocked { get; set; } = false;
 
-        public static bool Level3Unlocked{ get; set; } = false;
         public static int UnlockedLevel { get; set; } = DefaultUnlockedLevel;
         public static bool Fullscreen { get; set; } = true;
         public static int Brightness { get; set; } = 80; // 1–100

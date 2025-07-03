@@ -319,6 +319,9 @@ namespace EnzuGame.Forms
                 {
                     levelCompleted = true;
                     nextButton.Visible = true;
+                    GameSettings.Level3Unlocked = true;
+                    GameSettings.SaveSettings();
+
                 }
             }
             Invalidate();
