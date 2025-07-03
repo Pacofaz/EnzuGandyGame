@@ -1,12 +1,15 @@
 ﻿#nullable enable
 
 using EnzuGame.Klassen;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
 
 namespace EnzuGame.Forms
 {
     /// <summary>
-    /// Hauptmenü des Spiels. Zeigt Buttons (Start, Einstellungen, Beenden) an
-    /// und kümmert sich um das Layout und die Events.
+    /// Hauptmenü des Spiels. Zeigt Buttons (Start, Einstellungen, Beenden) an,
+    /// unterstützt Maus- und Tastatursteuerung.
     /// </summary>
     public partial class MainForm : BaseForm
     {
@@ -16,7 +19,7 @@ namespace EnzuGame.Forms
         private const string SoundtrackPath = "Resources/soundtrack.wav";
 
         /// <summary>
-        /// Definiert, wie die Buttons im Hauptmenü aussehen und platziert werden.
+        /// Button-Configs: normal, hover, pressed, rect, key
         /// </summary>
         private readonly (string normal, string hover, string pressed, Rectangle rect, string key)[] buttonConfigs = {
             ("Resources/btn_start.png",    "Resources/btn_start_hover.png",    "Resources/btn_start_pressed.png",    new Rectangle(90,  60, 140, 30), "Start"),
@@ -24,28 +27,30 @@ namespace EnzuGame.Forms
             ("Resources/btn_exit.png",     "Resources/btn_exit_hover.png",     "Resources/btn_exit_pressed.png",     new Rectangle(90, 120, 140, 30), "Exit"),
         };
 
-        // --- Layout-Parameter für das Overlay-Board ---
+        // --- Layout Overlay ---
         private readonly Size overlayOriginalSize = new(320, 200);
         private Rectangle overlayRect;
         private float scaleFactorX = 1f, scaleFactorY = 1f;
 
-        // --- Ressourcen und Buttons ---
+        // --- Ressourcen & Buttons ---
         private Image? backgroundImage;
         private Image? overlayImage;
         private readonly Dictionary<string, ImageButton> buttons = new();
 
-        // --- Verweise auf geöffnete Sub-Forms ---
+        // --- Settings ---
         private Form? activeSettingsForm;
 
-        /// <summary>
-        /// Initialisiert das Hauptmenü und lädt Grafiken und Buttons.
-        /// </summary>
+        // --- Tastatursteuerung ---
+        private int selectedIndex = 0;
+        private bool blockKeyRepeat = false; // Optional, falls du KeyRepeat verhindern willst
+
         public MainForm()
         {
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.Sizable;
             StartPosition = FormStartPosition.CenterScreen;
             ClientSize = new Size(640, 480);
+            KeyPreview = true;
             InitializeComponent();
 
             backgroundImage = TryLoadImage(BgPath);
@@ -54,38 +59,27 @@ namespace EnzuGame.Forms
             CreateButtons();
             Resize += (_, _) => RepositionUI();
             Load += MainForm_Load;
+            KeyDown += MainForm_KeyDown;
         }
 
-        /// <summary>
-        /// Versucht, ein Bild von Platte zu laden. Gibt null zurück, wenn das Bild nicht gefunden wird.
-        /// </summary>
         private Image? TryLoadImage(string path)
         {
             try
             {
                 return File.Exists(path) ? Image.FromFile(path) : null;
             }
-            catch
-            {
-                // Fehlerhandling für defekte oder fehlende Ressourcen
-                return null;
-            }
+            catch { return null; }
         }
 
-        /// <summary>
-        /// Wird beim Laden der Form ausgeführt. Initialisiert die Einstellungen, startet die Musik und positioniert das UI.
-        /// </summary>
         private void MainForm_Load(object? sender, EventArgs e)
         {
             GameSettings.Initialize(this);
             SoundManager.PlayBackgroundMusic(SoundtrackPath);
             SoundManager.SetMusicVolume(GameSettings.MusicVolume / 100f);
             RepositionUI();
+            UpdateButtonHighlight();
         }
 
-        /// <summary>
-        /// Erstellt die Hauptmenü-Buttons und registriert ihre Click-Events.
-        /// </summary>
         private void CreateButtons()
         {
             var clickActions = new Dictionary<string, EventHandler>
@@ -102,17 +96,27 @@ namespace EnzuGame.Forms
                     NormalImage = TryLoadImage(normal) ?? new Bitmap(rect.Width, rect.Height),
                     HoverImage = TryLoadImage(hover) ?? new Bitmap(rect.Width, rect.Height),
                     ClickedImage = TryLoadImage(pressed) ?? new Bitmap(rect.Width, rect.Height),
-                    Size = rect.Size
+                    Size = rect.Size,
+                    TabStop = false
                 };
                 btn.Click += clickActions[key];
+
+                // --- Synchronisiere Tastatur/Maus: ---
+                btn.MouseEnter += (s, e) =>
+                {
+                    int idx = Array.FindIndex(buttonConfigs, x => x.key == key);
+                    if (idx != -1)
+                    {
+                        selectedIndex = idx;
+                        UpdateButtonHighlight();
+                    }
+                };
+
                 Controls.Add(btn);
                 buttons[key] = btn;
             }
         }
 
-        /// <summary>
-        /// Berechnet die aktuelle Overlay- und Button-Positionen abhängig von der Fenstergröße.
-        /// </summary>
         private void RepositionUI()
         {
             float targetWidth = GameSettings.Fullscreen ? ClientSize.Width * 0.4f : overlayOriginalSize.Width;
@@ -137,12 +141,54 @@ namespace EnzuGame.Forms
                         overlayRect.Y + (int)(relRect.Y * scaleFactorY));
                 }
             }
+            UpdateButtonHighlight();
             Invalidate();
         }
 
+        private void MainForm_KeyDown(object? sender, KeyEventArgs e)
+        {
+            var buttonKeys = buttonConfigs.Select(cfg => cfg.key).ToArray();
+            int btnCount = buttonKeys.Length;
+
+            if (e.KeyCode == Keys.W || e.KeyCode == Keys.Up)
+            {
+                selectedIndex = (selectedIndex - 1 + btnCount) % btnCount;
+                UpdateButtonHighlight();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.S || e.KeyCode == Keys.Down)
+            {
+                selectedIndex = (selectedIndex + 1) % btnCount;
+                UpdateButtonHighlight();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                var selectedKey = buttonKeys[selectedIndex];
+                if (buttons.TryGetValue(selectedKey, out var btn))
+                {
+                    btn.PerformClick();
+                }
+                e.Handled = true;
+            }
+        }
+
         /// <summary>
-        /// Öffnet das Level-Auswahlfenster modal, blendet das Hauptmenü währenddessen aus.
+        /// Setzt optisches Highlight auf den aktuell selektierten Button (Tastaturfokus)
         /// </summary>
+        private void UpdateButtonHighlight()
+        {
+            var buttonKeys = buttonConfigs.Select(cfg => cfg.key).ToArray();
+            for (int i = 0; i < buttonKeys.Length; i++)
+            {
+                if (buttons.TryGetValue(buttonKeys[i], out var btn))
+                {
+                    btn.IsHovered = (i == selectedIndex);
+                    btn.Invalidate();
+                }
+            }
+        }
+
         private void BtnStart_Click(object? sender, EventArgs e)
         {
             Hide();
@@ -153,9 +199,6 @@ namespace EnzuGame.Forms
             Show();
         }
 
-        /// <summary>
-        /// Öffnet das Einstellungsfenster modal. Nur eine Instanz gleichzeitig erlaubt.
-        /// </summary>
         private void BtnSettings_Click(object? sender, EventArgs e)
         {
             if (activeSettingsForm == null || activeSettingsForm.IsDisposed)
@@ -167,14 +210,8 @@ namespace EnzuGame.Forms
             else { activeSettingsForm.Activate(); }
         }
 
-        /// <summary>
-        /// Beendet das Programm, wenn der Exit-Button gedrückt wird.
-        /// </summary>
         private void BtnExit_Click(object? sender, EventArgs e) => Close();
 
-        /// <summary>
-        /// Zeichnet Hintergrund und Overlay neu.
-        /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
