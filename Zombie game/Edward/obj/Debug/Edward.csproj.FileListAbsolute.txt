@@ -39,3 +39,15 @@ C:\Users\recke\Desktop\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.pdb
 C:\Users\recke\Desktop\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.exe.config
 C:\Users\recke\Desktop\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.exe
 C:\Users\recke\Desktop\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.pdb
+C:\Users\onlin\Desktop\Neuer Ordner (10)\EnzuGandyGame\Zombie game\Edward\obj\Debug\ZombieGame.GameForm.resources
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.exe.config
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.exe
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\bin\Debug\Edward.pdb
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.csproj.AssemblyReference.cache
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\ZombieGame.GameForm.resources
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.Properties.Resources.resources
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\ZombieGame.StartMenuForm.resources
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.csproj.GenerateResource.cache
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.csproj.CoreCompileInputs.cache
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.exe
+C:\Users\onlin\Desktop\Neuer Ordner (12)\EnzuGandyGame\Zombie game\Edward\obj\Debug\Edward.pdb

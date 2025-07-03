@@ -71,3 +71,10 @@ Wir haben von Anfang an eine klare Ordnerstruktur im Projekt angelegt:
 
 Zusammenfassung der Woche
 In dieser ersten Woche haben wir als Team die komplette Planung und Strukturierung unseres Spiels EnzuGandyGame durchgeführt, die grundlegenden Themes und Farbschemata festgelegt und alle wichtigen Forms und Klassen skizziert. Die Basis für die Entwicklung steht!
+Aufgaben der Woche:
+- Leon: Moodboard und erste Levelskizzen erstellt, Grundlayout der Forms vorbereitet.
+- Selcuk: Repository eingerichtet, Ordnerstruktur angelegt und Startmenü-Konzept ausgearbeitet.
+
+Aufgetretene Probleme und Lösungen:
+- Beim Einrichten des gemeinsamen Projekts gab es Konflikte mit automatisch erzeugten Dateien. Durch eine erweiterte `.gitignore` und eine gemeinsame Visual-Studio-Vorlage konnten wir diese beheben.
+- Zudem funktionierte die gemeinsame Nutzung der Forms zunächst nicht reibungslos. Nach Abstimmung der Einstellungen ließen sich die Oberflächen korrekt teilen.

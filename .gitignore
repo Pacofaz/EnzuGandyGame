@@ -1,0 +1,103 @@
+# Build-Ordner (Standard)
+bin/
+obj/
+
+# Debug/Release-Ordner
+Debug/
+Release/
+
+# Visual Studio Dateien und temporäres
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Backup-, Cache- und Datenbankdateien
+*.db
+*.v2
+*.cache
+*.bak
+*.log
+*.tmp
+*.swp
+*.ncb
+*.opendb
+*.pidb
+*.sdf
+*.sou
+
+# Build-Artefakte
+*.dll
+*.exe
+*.pdb
+*.mdb
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.vsix
+*.msm
+*.msp
+*.msi
+
+# Rider/JetBrains
+.idea/
+*.DotSettings.user
+
+# Sonstige IDE/Editor Dateien
+*.vspscc
+*.vssscc
+*.vsp
+*.vsscc
+*.userprefs
+*.dbmdl
+*.psess
+*.vspx
+*.orig
+
+# Node/NPM falls mal JS-Tools genutzt werden
+node_modules/
+
+# Sonstige automatisch generierte Dateien
+*.g.cs
+*.iobj
+*.ipdb
+*.ilk
+
+# Windows spezifisch
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Test-Ergebnisse
+TestResults/
+*.trx
+
+# Publish/WebDeploy Dateien
+*.Publish.xml
+publish/
+
+# Paket-Manager (NuGet usw.)
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings
+
+# Lokale Umgebungsdateien
+.env
+*.env
+
+# Dokumentations-/Backupordner
+doc/
+docs/
+*.docstates
+
+# Crashdumps und Memory Dumps
+*.dmp
