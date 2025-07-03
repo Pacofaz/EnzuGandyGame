@@ -104,10 +104,10 @@
     <Content Include="Resources\igor1.PNG">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\igor2.PNG">
+    <Content Include="Resources\igor2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\igor3.PNG">
+    <Content Include="Resources\igor3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\igor4.PNG">
