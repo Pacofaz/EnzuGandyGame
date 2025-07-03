@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,18 +7,21 @@ using System.Windows.Forms;
 
 namespace ZombieGame.Entities
 {
+    /// <summary>
+    /// Stellt den Spieler dar – Animation, Bewegung, Inventar, Leben, Waffen, Geld und Eingabe.
+    /// </summary>
     public class Player : Entity
     {
-        // Idle-Frames
+        // --- Grafiksprites: Idle & Laufen für Pistole/Rifle, Einheitsgröße ---
         private static readonly Bitmap IdlePistolFrame;
         private static readonly Bitmap IdleRifleFrame;
-        // Run-Frames
         private static readonly Bitmap[] RunPistolFrames;
         private static readonly Bitmap[] RunRifleFrames;
         private static readonly SizeF EntitySize;
         private const int MaxHealth = 100;
         private const float Scale = 0.7f;
 
+        // --- Status & Animation ---
         private readonly PointF _startPosition;
         private bool _facingRight = true;
         private Bitmap[] _currentAnim;
@@ -27,6 +29,7 @@ namespace ZombieGame.Entities
         private int _frameTimer;
         private const int FrameInterval = 8;
 
+        // --- Spieler-Status ---
         private readonly HashSet<Keys> _pressed = new HashSet<Keys>();
         private readonly List<string> _inventory = new List<string>();
         private int _curWeap;
@@ -35,21 +38,23 @@ namespace ZombieGame.Entities
 
         public int Health { get; private set; }
 
+        /// <summary>
+        /// Lädt die Sprite-Bitmaps für Idle- und Laufanimationen einmalig.
+        /// </summary>
         static Player()
         {
             string assets = Path.Combine(Application.StartupPath, "Assets");
 
-            // Idle-Pistol
+            // Idle-Sprites laden
             string idlePPath = Path.Combine(assets, "idle_pistol.png");
             if (!File.Exists(idlePPath)) throw new FileNotFoundException("idle_pistol.png nicht gefunden", idlePPath);
             IdlePistolFrame = new Bitmap(idlePPath);
 
-            // Idle-Rifle
             string idleRPath = Path.Combine(assets, "idle_rifle.png");
             if (!File.Exists(idleRPath)) throw new FileNotFoundException("idle_rifle.png nicht gefunden", idleRPath);
             IdleRifleFrame = new Bitmap(idleRPath);
 
-            // Run-Pistol (2 Frames)
+            // Run-Sprites (2 Frames pro Waffe, SpriteSheet zerteilen)
             string runPPath = Path.Combine(assets, "run_pistol.png");
             if (!File.Exists(runPPath)) throw new FileNotFoundException("run_pistol.png nicht gefunden", runPPath);
             using (var sheet = new Bitmap(runPPath))
@@ -59,8 +64,6 @@ namespace ZombieGame.Entities
                 RunPistolFrames[0] = sheet.Clone(new Rectangle(0, 0, w, h), sheet.PixelFormat);
                 RunPistolFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
             }
-
-            // Run-Rifle (2 Frames)
             string runRPath = Path.Combine(assets, "run_rifle.png");
             if (!File.Exists(runRPath)) throw new FileNotFoundException("run_rifle.png nicht gefunden", runRPath);
             using (var sheet = new Bitmap(runRPath))
@@ -71,12 +74,15 @@ namespace ZombieGame.Entities
                 RunRifleFrames[1] = sheet.Clone(new Rectangle(w, 0, w, h), sheet.PixelFormat);
             }
 
-            // Größe basierend auf größter Idle-Frame
+            // Spritegröße bestimmen (größte Idle-Sprite als Basis)
             float width = Math.Max(IdlePistolFrame.Width, IdleRifleFrame.Width) * Scale;
             float height = Math.Max(IdlePistolFrame.Height, IdleRifleFrame.Height) * Scale;
             EntitySize = new SizeF(width, height);
         }
 
+        /// <summary>
+        /// Erstellt einen Spieler an einer Startposition und setzt alle Stats zurück.
+        /// </summary>
         public Player(PointF start)
             : base(start, 5f, EntitySize)
         {
@@ -84,6 +90,9 @@ namespace ZombieGame.Entities
             Reset();
         }
 
+        /// <summary>
+        /// Setzt Inventar, Leben, Animation, Geld etc. zurück (für Restart).
+        /// </summary>
         private void InitializeStats()
         {
             Health = MaxHealth;
@@ -107,6 +116,9 @@ namespace ZombieGame.Entities
 
         public void Heal(int amount) => Health = Math.Min(MaxHealth, Health + amount);
 
+        /// <summary>
+        /// Verarbeitet Bewegung, Animation und Waffen-Cooldown.
+        /// </summary>
         public override void Update()
         {
             float dx = 0, dy = 0;
@@ -141,6 +153,9 @@ namespace ZombieGame.Entities
             if (_fireCd > 0) _fireCd--;
         }
 
+        /// <summary>
+        /// Zeichnet den Spieler inklusive Schatten und Flip bei Linksbewegung.
+        /// </summary>
         public override void Draw(Graphics g)
         {
             var frame = _currentAnim[_currentFrame];
@@ -148,7 +163,7 @@ namespace ZombieGame.Entities
             float cx = Position.X, cy = Position.Y;
             float x = cx - w / 2, y = cy - h / 2;
 
-            // Schatten
+            // Schatten unter dem Spieler
             float sw = w * 1.1f, sh = h * 0.3f;
             float sx = cx - sw / 2, sy = cy + h / 2 - sh + 8f;
             using (var path = new GraphicsPath())
@@ -165,7 +180,7 @@ namespace ZombieGame.Entities
             }
             g.SmoothingMode = SmoothingMode.None;
 
-            // Sprite
+            // Sprite zeichnen (nach Blickrichtung spiegeln)
             g.InterpolationMode = InterpolationMode.NearestNeighbor;
             g.PixelOffsetMode = PixelOffsetMode.Half;
             var state = g.Save();
@@ -181,6 +196,9 @@ namespace ZombieGame.Entities
             g.PixelOffsetMode = PixelOffsetMode.Default;
         }
 
+        /// <summary>
+        /// Verarbeitet gedrückte Tasten (Bewegung, Waffenwechsel).
+        /// </summary>
         public void OnKeyDown(KeyEventArgs e)
         {
             _pressed.Add(e.KeyCode);
@@ -192,13 +210,13 @@ namespace ZombieGame.Entities
 
         public void OnKeyUp(KeyEventArgs e) => _pressed.Remove(e.KeyCode);
 
+        // --- Waffen/Feuern-Methoden ---
         public bool CanFire() => _fireCd <= 0;
         public void ResetFireCooldown() => _fireCd = (_curWeap == 0) ? 15 : 5;
-
-        public PointF GetCenter() => new PointF(Position.X, Position.Y);
         public int GetCurrentWeaponDamage() => (_curWeap == 0) ? 25 : 50;
         public int GetCurrentWeaponIndex() => _curWeap;
         public List<string> GetInventory() => _inventory;
+        public PointF GetCenter() => new PointF(Position.X, Position.Y);
 
         public void AddWeapon(string w)
         {
@@ -213,7 +231,7 @@ namespace ZombieGame.Entities
         public int GetMoney() => _money;
 
         /// <summary>
-        /// Wechselt die aktuelle Waffe (Slot 0 = Pistol, 1 = Rifle, …).
+        /// Setzt die aktuelle Waffe und die Animation zurück.
         /// </summary>
         public void SetCurrentWeaponIndex(int index)
         {

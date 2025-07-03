@@ -11,15 +11,18 @@ using ZombieGame.Utils;
 
 namespace ZombieGame
 {
+    /// <summary>
+    /// Die zentrale Game-Logikklasse: verwaltet Spielfluss, Spieler, Gegner, Shop, Wellen, Musik, Rendering & Input.
+    /// </summary>
     public class Game
     {
-        // --- Konstanten ---
+        // --- Spiel-Konstanten (Schadensanzeige, Shop, Belohnungen) ---
         private const int DamageFlashDuration = 15;
         private const int ShopHealthCost = 15;
         private const int ShopHealthAmount = 20;
         private const int MoneyPerKill = 10;
 
-        // --- Felder ---
+        // --- Spielfeld, Spieler, Gegner & Verwaltung ---
         private readonly Size _screenSize;
         private readonly Map _map;
         private readonly Player _player;
@@ -28,11 +31,13 @@ namespace ZombieGame
         private readonly MusicPlayer _musicPlayer;
         private readonly string _musicPath;
 
+        // --- Entitäten-Listen für Kollision & Anzeige ---
         private readonly List<Entity> _pickups = new List<Entity>();
         private readonly List<Bullet> _bullets = new List<Bullet>();
         private readonly List<Projectile> _enemyProj = new List<Projectile>();
         private readonly List<Zombie> _zombies = new List<Zombie>();
 
+        // --- Status & Steuerelemente für verschiedene Spielphasen ---
         private GameState _state = GameState.Playing;
         private bool _deathHandled;
         private bool _shopTriggered;
@@ -40,11 +45,12 @@ namespace ZombieGame
         private int _buyPulseTimer;
         private int _damageFlashTimer;
         private Point _lastMousePos;
-
         private Rectangle _tryAgainBtn, _backToMenuBtn;
         private Rectangle _shopBuyBtn, _shopContinueBtn;
 
-        // --- Konstruktor ---
+        /// <summary>
+        /// Initialisiert das Spiel: Map, Spieler, Kamera, Gegnerwellen, Musik etc.
+        /// </summary>
         public Game(Size screenSize)
         {
             _screenSize = screenSize;
@@ -52,13 +58,14 @@ namespace ZombieGame
             _player = new Player(new PointF(_map.Width / 2f, _map.Height / 2f));
             _camera = new Camera(screenSize, _player) { Zoom = 1.9f };
             _waveManager = new WaveManager(_zombies, _map, _player, _enemyProj);
-
             _musicPlayer = new MusicPlayer();
             _musicPath = Path.Combine(Application.StartupPath, "Assets", "Music", "background.mp3");
             _musicPlayer.Play(_musicPath, loop: true);
         }
 
-        // --- Haupt-Update-Schleife ---
+        /// <summary>
+        /// Haupt-Update: Verarbeitet Spielzustand, Bewegung, Gegner, Schüsse, Shop und GameOver.
+        /// </summary>
         public void Update()
         {
             bool mouseLeft = (Control.MouseButtons & MouseButtons.Left) != 0;
@@ -70,28 +77,23 @@ namespace ZombieGame
             ClampPlayerToMap();
             _camera.Update();
 
-            // Reset Shop-Trigger sobald eine Welle aktiv läuft
+            // Shop anzeigen, wenn neue Welle vorbereitet wird
             if (_state == GameState.Playing && !_waveManager.NextWaveScheduled)
                 _shopTriggered = false;
-
-            // Shop anzeigen, sobald NextWaveScheduled true wird
             if (_state == GameState.Playing && !_shopTriggered && _waveManager.NextWaveScheduled)
             {
                 _state = GameState.Shop;
                 _shopTriggered = true;
             }
-
-            // Im Shop keine weitere Spiel-Logik
             if (_state == GameState.Shop)
                 return;
 
             var playerRect = new RectangleF(_player.Position, _player.Size);
-
             UpdateZombies(playerRect);
             UpdateEnemyProjectiles(playerRect);
             UpdateBullets();
 
-            // Schießen mit Gewehr (Waffenindex 1)
+            // Spieler schießt mit Gewehr
             if (mouseLeft && _player.GetCurrentWeaponIndex() == 1 && _player.CanFire())
             {
                 FireAt(_lastMousePos);
@@ -99,6 +101,9 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Spieler bleibt innerhalb der Map-Grenzen.
+        /// </summary>
         private void ClampPlayerToMap()
         {
             var p = _player.Position;
@@ -107,6 +112,9 @@ namespace ZombieGame
             _player.Position = p;
         }
 
+        /// <summary>
+        /// Gegner (Zombies) updaten und prüfen auf Kollision mit Spieler.
+        /// </summary>
         private void UpdateZombies(RectangleF pr)
         {
             foreach (var z in _zombies)
@@ -127,6 +135,9 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Feindliche Projektile (z.B. ZombieRange) updaten und prüfen auf Treffer beim Spieler.
+        /// </summary>
         private void UpdateEnemyProjectiles(RectangleF pr)
         {
             for (int i = _enemyProj.Count - 1; i >= 0; i--)
@@ -152,6 +163,9 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Spieler-Projektile (Bullets) updaten, prüfen auf Treffer bei Zombies, ggf. Geld auszahlen.
+        /// </summary>
         private void UpdateBullets()
         {
             for (int i = _bullets.Count - 1; i >= 0; i--)
@@ -186,16 +200,21 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Spieler nimmt Schaden (inkl. Schadensblende für visuelles Feedback).
+        /// </summary>
         private void HitPlayer()
         {
             _player.Damage(10);
             _damageFlashTimer = DamageFlashDuration;
         }
 
-        // --- Zeichnen ---
+        /// <summary>
+        /// Zentrales Rendering: Spielfeld, Entitäten und je nach Status (UI, Shop, GameOver).
+        /// </summary>
         public void Draw(Graphics g)
         {
-            // Spielwelt
+            // Spielfeld & Entitäten zeichnen
             g.ResetTransform();
             g.Clear(Color.DimGray);
             g.ScaleTransform(_camera.Zoom, _camera.Zoom);
@@ -208,7 +227,7 @@ namespace ZombieGame
             _zombies.ForEach(z => z.Draw(g));
             _bullets.ForEach(b => b.Draw(g));
 
-            // UI
+            // User Interface (UI) und Spezialanzeigen je nach Status
             g.ResetTransform();
             UI.DrawGame(g, _player, _waveManager, _screenSize);
 
@@ -228,6 +247,9 @@ namespace ZombieGame
             }
         }
 
+        /// <summary>
+        /// Shop-UI: Health kaufen oder weiter.
+        /// </summary>
         private void DrawShop(Graphics g)
         {
             using (var ov = new SolidBrush(Color.FromArgb(160, 0, 0, 0)))
@@ -269,6 +291,9 @@ namespace ZombieGame
             DrawButton(g, _shopContinueBtn, "Weiter");
         }
 
+        /// <summary>
+        /// GameOver-UI: Try Again/Back to Menu anzeigen.
+        /// </summary>
         private void DrawGameOver(Graphics g)
         {
             const string msg = "YOU ARE DEAD";
@@ -289,6 +314,9 @@ namespace ZombieGame
             DrawButton(g, _backToMenuBtn, "Back to Menu");
         }
 
+        /// <summary>
+        /// Basis-Button-Renderer (UI-Buttons, z.B. Shop, GameOver).
+        /// </summary>
         private void DrawButton(Graphics g, Rectangle r, string text)
         {
             g.FillRectangle(Brushes.Black, r);
@@ -302,9 +330,10 @@ namespace ZombieGame
             }
         }
 
-        // --- Input-Handling ---
+        // --- Maus- und Tastatureingaben für UI/Spielsteuerung ---
         public bool HandleMouseClick(MouseEventArgs e)
         {
+            // GameOver-Buttons
             if (_state == GameState.GameOver)
             {
                 if (_tryAgainBtn.Contains(e.Location))
@@ -314,23 +343,15 @@ namespace ZombieGame
                 }
                 if (_backToMenuBtn.Contains(e.Location))
                 {
-                    // 1) laufende Musik stoppen
                     _musicPlayer.Stop();
-
-                    // 2) Game-Form verstecken
                     var gameForm = Form.ActiveForm;
                     gameForm?.Hide();
-
-                    // 3) Start-Menü anzeigen
                     using (var menu = new StartMenuForm())
                     {
                         if (menu.ShowDialog() == DialogResult.OK)
                         {
-                            // 4) Spiel zurücksetzen
                             Restart();
-                            // 5) Musik neu starten
                             _musicPlayer.Play(_musicPath, loop: true);
-                            // 6) Game-Form wieder anzeigen
                             gameForm?.Show();
                         }
                         else
@@ -343,6 +364,7 @@ namespace ZombieGame
                 return false;
             }
 
+            // Shop-Buttons
             if (_state == GameState.Shop)
             {
                 if (_shopBuyBtn.Contains(e.Location))
@@ -352,8 +374,7 @@ namespace ZombieGame
                         _player.AddMoney(-ShopHealthCost);
                         _player.Heal(ShopHealthAmount);
                         _justBought = true;
-                        _buyPulseTimer =
- DamageFlashDuration;
+                        _buyPulseTimer = DamageFlashDuration;
                     }
                     return true;
                 }
@@ -364,10 +385,12 @@ namespace ZombieGame
                 }
                 return false;
             }
-
             return false;
         }
 
+        /// <summary>
+        /// Startet das Spiel neu: Spieler und Gegner zurücksetzen, neue Wellen starten.
+        /// </summary>
         private void Restart()
         {
             _player.Reset();
@@ -380,17 +403,16 @@ namespace ZombieGame
             _bullets.Clear();
             _pickups.Clear();
             _waveManager = new WaveManager(_zombies, _map, _player, _enemyProj);
-
             _state = GameState.Playing;
         }
 
+        // --- Tastatur- und Mausevents an Spieler und Statusverwaltung weiterleiten ---
         public void OnKeyDown(KeyEventArgs e)
         {
             if (_state == GameState.Playing && e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D5)
             {
                 _player.SetCurrentWeaponIndex(e.KeyCode - Keys.D1);
             }
-            // ESC nur in Playing oder Paused wirksam
             else if (e.KeyCode == Keys.Escape
                      && (_state == GameState.Playing || _state == GameState.Paused))
             {
@@ -433,6 +455,9 @@ namespace ZombieGame
                 _lastMousePos = e.Location;
         }
 
+        /// <summary>
+        /// Projektil (Bullet) abfeuern in Richtung Mausposition.
+        /// </summary>
         private void FireAt(Point sp)
         {
             float wx = _camera.Position.X + sp.X / _camera.Zoom;
