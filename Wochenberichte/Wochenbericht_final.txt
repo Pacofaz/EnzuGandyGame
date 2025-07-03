@@ -1,0 +1,15 @@
+Wochenbericht – Informatik-Projekt
+Zeitraum: 23.06.2025 bis 03.07.2025
+Projektgruppe: Enzu Games
+
+1. EnzuGame (Match-3)
+- Level 4 fertiggestellt und letzte Grafiken sowie Soundeffekte eingebunden.
+- Launcher erstellt, um beide Spiele komfortabel zu starten.
+- Diverse Bugfixes und Code-Aufräumarbeiten.
+
+2. Zombie-Spiel
+- Spiel um weitere Gegnertypen und Shop-System erweitert.
+- Feinschliff am UI und Balancing der Wellen.
+
+Fazit:
+Nach drei intensiven Wochen ist das Gesamtprojekt abgeschlossen. Sowohl das Match-3-Spiel als auch das Zombie-Game laufen stabil und können über den Launcher gestartet werden. Alle Ressourcen und Dokumente sind im Repository abgelegt.
