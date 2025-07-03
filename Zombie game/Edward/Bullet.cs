@@ -28,7 +28,6 @@ namespace ZombieGame.Entities
         {
             var rect = new RectangleF(Position.X, Position.Y, Size.Width, Size.Height);
 
-            // 1) Großer, diffuser Glow
             using (var glowPath = new GraphicsPath())
             {
                 glowPath.AddEllipse(rect);
@@ -36,9 +35,9 @@ namespace ZombieGame.Entities
                 {
                     glowBrush.CenterColor = Color.FromArgb(0, 255, 50, 50);
                     glowBrush.SurroundColors = new[] { Color.FromArgb(0, 255, 50, 50) };
-                    // Ausdehnung des Glows
+
                     glowBrush.FocusScales = new PointF(0.8f, 0.8f);
-                    // Erweitere das Pfadgebiet für noch diffuseren Rand:
+
                     var inflated = rect;
                     inflated.Inflate(12, 12);
                     using (var inflatedPath = new GraphicsPath())
@@ -49,10 +48,9 @@ namespace ZombieGame.Entities
                 }
             }
 
-            // 2) Mittlerer Glow-Ring
             using (var ringPath = new GraphicsPath())
             {
-                // etwas kleinerer Ring
+
                 var ringRect = rect;
                 ringRect.Inflate(4, 4);
                 ringPath.AddEllipse(ringRect);
@@ -65,7 +63,6 @@ namespace ZombieGame.Entities
                 }
             }
 
-            // 3) Harter roter Kern
             using (var coreBrush = new SolidBrush(Color.FromArgb(255, 255, 50, 50)))
             {
                 g.FillEllipse(coreBrush, rect);

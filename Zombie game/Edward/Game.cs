@@ -352,7 +352,8 @@ namespace ZombieGame
                         _player.AddMoney(-ShopHealthCost);
                         _player.Heal(ShopHealthAmount);
                         _justBought = true;
-                        _buyPulseTimer = DamageFlashDuration;
+                        _buyPulseTimer =
+ DamageFlashDuration;
                     }
                     return true;
                 }
@@ -389,9 +390,13 @@ namespace ZombieGame
             {
                 _player.SetCurrentWeaponIndex(e.KeyCode - Keys.D1);
             }
-            else if (e.KeyCode == Keys.Escape)
+            // ESC nur in Playing oder Paused wirksam
+            else if (e.KeyCode == Keys.Escape
+                     && (_state == GameState.Playing || _state == GameState.Paused))
             {
-                _state = _state == GameState.Playing ? GameState.Paused : GameState.Playing;
+                _state = _state == GameState.Playing
+                    ? GameState.Paused
+                    : GameState.Playing;
             }
             else if (e.KeyCode == Keys.I && _state == GameState.Playing)
             {
