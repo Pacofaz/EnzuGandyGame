@@ -9,7 +9,7 @@ Dieses Repository enthält unser Abschlussprojekt aus dem Informatik-Unterricht.
 
 ## Inhalt
 - `EnzuGame/` – Match‑3‑Spiel im Stil von Candy Crush mit vier Leveln.
-- `Zombie game/` – Edwards Zombie-Shooter mit Wellen-System und Shop.
+- `Zombie game/` – Enzu Zombie-Shooter mit Wellen-System und Shop.
 - `EnzuLauncher/` – Launcher zum Starten beider Spiele.
 - `Planung/` – Moodboard, Skizzen und weitere Design-Dokumente.
 - `Wochenberichte/` – Unsere wöchentlichen Berichte (1–2 und Abschluss).
