@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace EnzuLauncherV2
@@ -15,6 +16,17 @@ namespace EnzuLauncherV2
         private string gameTitle;
         private Image[] galleryImages;
         private int selectedIndex = 0;
+
+        //  Methode zum Finden des Projekt-Roots 
+        private string FindRepoRoot(string startPath)
+        {
+            var dir = new DirectoryInfo(startPath);
+            while (dir != null && dir.Name != "EnzuGandyGame")
+            {
+                dir = dir.Parent;
+            }
+            return dir?.FullName;
+        }
 
         public FormGamePreview(string title)
         {
@@ -211,16 +223,34 @@ namespace EnzuLauncherV2
                 }
             }
 
-            // --- Start-Button Klick ---
+            //Start-Button
             if (startButtonRect.Contains(e.Location))
             {
                 string exePath = "";
-                if (gameTitle == "Candy Game")
-                    exePath = @"C:\Pfad\zu\CandyGame.exe"; // <-- Muss ich noch anpassen (WICHTIG)
-                else if (gameTitle == "Igor Survival")
-                    exePath = @"C:\Pfad\zu\IgorSurvival.exe"; // <-- ANPASSEN!!
 
-                if (!string.IsNullOrEmpty(exePath))
+            
+                string baseDir = Application.StartupPath;
+
+                
+                string repoRoot = FindRepoRoot(baseDir);
+
+                if (repoRoot == null)
+                {
+                    MessageBox.Show("Projekt-Root 'EnzuGandyGame' nicht gefunden!");
+                    return;
+                }
+
+                if (gameTitle == "Candy Game")
+                {
+                    exePath = Path.Combine(repoRoot, "EnzuGame", "EnzuGame", "bin", "Debug", "net9.0-windows", "EnzuGame.exe");
+                }
+                else if (gameTitle == "Igor Survival")
+                {
+                    exePath = Path.Combine(repoRoot, "Zombie game", "Edward", "bin", "Debug", "Edward.exe"); 
+                }
+
+
+                if (System.IO.File.Exists(exePath))
                 {
                     try
                     {
@@ -230,6 +260,10 @@ namespace EnzuLauncherV2
                     {
                         MessageBox.Show("Spiel konnte nicht gestartet werden:\n" + ex.Message);
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Spiel-Datei nicht gefunden:\n" + exePath);
                 }
             }
         }
