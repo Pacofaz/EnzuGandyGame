@@ -3,9 +3,9 @@
 Dieses Repository enthält unser Abschlussprojekt aus dem Informatik-Unterricht. Es besteht aus zwei Spielen und einem Launcher.
 
 ## Team
-- **Selcuk**
-- **Leon**
-- **Edward**
+- **Selcuk**  1/3%
+- **Leon**    1/3%
+- **Edward**  1/3%
 
 ## Inhalt
 - `EnzuGame/` – Match‑3‑Spiel im Stil von Candy Crush mit vier Leveln.
